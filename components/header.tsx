@@ -3,10 +3,11 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, Heart } from "lucide-react"
+import { Menu, X, User, Heart, LayoutDashboard } from "lucide-react" // Added LayoutDashboard icon
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const isAuthenticated = true // For demonstration, assume user is logged in
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -39,17 +40,28 @@ export function Header() {
               <Heart className="w-4 h-4 mr-2" />
               Wishlist
             </Button>
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm">
-                <User className="w-4 h-4 mr-2" />
-                Login
-              </Button>
-            </Link>
-            <Link href="/business/signup">
-              <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
-                List Your Business
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/business/signup">
+                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
+                    List Your Business
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -76,17 +88,28 @@ export function Header() {
                   <Heart className="w-4 h-4 mr-2" />
                   Wishlist
                 </Button>
-                <Link href="/auth/login">
-                  <Button variant="ghost" size="sm" className="justify-start w-full">
-                    <User className="w-4 h-4 mr-2" />
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/business/signup">
-                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
-                    List Your Business
-                  </Button>
-                </Link>
+                {isAuthenticated ? (
+                  <Link href="/dashboard">
+                    <Button variant="ghost" size="sm" className="justify-start w-full">
+                      <LayoutDashboard className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/auth/login">
+                      <Button variant="ghost" size="sm" className="justify-start w-full">
+                        <User className="w-4 h-4 mr-2" />
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/business/signup">
+                      <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
+                        List Your Business
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>
