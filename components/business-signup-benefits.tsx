@@ -1,129 +1,57 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Users, TrendingUp, Shield, Headphones, Star, BarChart3 } from "lucide-react"
-
-const benefits = [
-  {
-    icon: Users,
-    title: "Reach More Customers",
-    description: "Connect with thousands of couples planning their events across Pakistan",
-    color: "text-blue-600",
-  },
-  {
-    icon: TrendingUp,
-    title: "Grow Your Business",
-    description: "Increase bookings and revenue with our marketing tools and platform reach",
-    color: "text-green-600",
-  },
-  {
-    icon: Shield,
-    title: "Verified Badge",
-    description: "Get verified status to build trust and credibility with potential customers",
-    color: "text-purple-600",
-  },
-  {
-    icon: Headphones,
-    title: "24/7 Support",
-    description: "Dedicated support team to help you succeed on our platform",
-    color: "text-pink-600",
-  },
-]
-
-const features = [
-  "Professional business profile",
-  "Photo gallery & portfolio showcase",
-  "Customer reviews & ratings",
-  "Direct booking inquiries",
-  "Payment processing",
-  "Analytics & insights",
-  "Marketing promotions",
-  "Mobile app access",
-]
-
-const stats = [
-  { number: "10,000+", label: "Active Customers" },
-  { number: "500+", label: "Partner Businesses" },
-  { number: "50+", label: "Cities Covered" },
-  { number: "95%", label: "Customer Satisfaction" },
-]
+import { CheckCircle, Briefcase, DollarSign, Star } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export function BusinessSignupBenefits() {
   return (
-    <div className="space-y-6">
-      {/* Main Benefits */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Star className="w-5 h-5 mr-2 text-pink-600" />
-            Why Join ShaadiDesk?
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {benefits.map((benefit, index) => {
-            const IconComponent = benefit.icon
-            return (
-              <div key={index} className="flex items-start space-x-3">
-                <div className={`p-2 rounded-lg bg-gray-50 ${benefit.color}`}>
-                  <IconComponent className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">{benefit.title}</h4>
-                  <p className="text-sm text-gray-600">{benefit.description}</p>
-                </div>
-              </div>
-            )
-          })}
-        </CardContent>
-      </Card>
-
-      {/* Features List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <BarChart3 className="w-5 h-5 mr-2 text-pink-600" />
-            Platform Features
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-2">
-            {features.map((feature, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-pink-600 rounded-full"></div>
-                <span className="text-sm text-gray-700">{feature}</span>
-              </div>
-            ))}
+    <section className="py-12 md:py-16 bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-8">List Your Business with ShaadiDesk</h2>
+        <p className="text-lg mb-12 max-w-3xl mx-auto">
+          Expand your reach, get more bookings, and grow your wedding business by joining our trusted network of
+          vendors.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          <div className="flex flex-col items-center text-center p-6 bg-white/10 rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-white/20 rounded-full mb-4">
+              <Briefcase className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Wider Reach</h3>
+            <p className="text-gray-200">Connect with thousands of couples actively planning their weddings.</p>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Stats */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Platform Statistics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-4">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-2xl font-bold text-pink-600">{stat.number}</div>
-                <div className="text-xs text-gray-600">{stat.label}</div>
-              </div>
-            ))}
+          <div className="flex flex-col items-center text-center p-6 bg-white/10 rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-white/20 rounded-full mb-4">
+              <DollarSign className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">More Bookings</h3>
+            <p className="text-gray-200">Increase your booking rates with direct inquiries and package deals.</p>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Pricing Info */}
-      <Card className="bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200">
-        <CardContent className="p-6 text-center">
-          <Badge className="mb-3 bg-pink-600">Limited Time Offer</Badge>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Join Free for 3 Months!</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            No setup fees, no hidden charges. Start growing your business today.
-          </p>
-          <div className="text-xs text-gray-500">*Standard pricing applies after trial period</div>
-        </CardContent>
-      </Card>
-    </div>
+          <div className="flex flex-col items-center text-center p-6 bg-white/10 rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-white/20 rounded-full mb-4">
+              <Star className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Build Reputation</h3>
+            <p className="text-gray-200">Showcase your best work and collect valuable client reviews.</p>
+          </div>
+          <div className="flex flex-col items-center text-center p-6 bg-white/10 rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-white/20 rounded-full mb-4">
+              <CheckCircle className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Easy Management</h3>
+            <p className="text-gray-200">
+              Manage your profile, services, and bookings through our intuitive dashboard.
+            </p>
+          </div>
+        </div>
+        <Link href="/business/signup">
+          <Button
+            size="lg"
+            className="bg-white text-pink-600 hover:bg-gray-100 text-lg px-8 py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            Join ShaadiDesk Today
+          </Button>
+        </Link>
+      </div>
+    </section>
   )
 }

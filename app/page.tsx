@@ -1,19 +1,19 @@
 import { HeroSection } from "@/components/hero-section"
-import { SearchSection } from "@/components/search-section"
 import { CategoriesSection } from "@/components/categories-section"
 import { FeaturedVenues } from "@/components/featured-venues"
 import { HowItWorks } from "@/components/how-it-works"
 import { TestimonialsSection } from "@/components/testimonials-section"
+import { BusinessSignupBenefits } from "@/components/business-signup-benefits"
 
 export default function HomePage() {
   return (
-    <div>
+    <main>
       <HeroSection />
-      <SearchSection />
       <CategoriesSection />
       <FeaturedVenues />
       <HowItWorks />
       <TestimonialsSection />
-    </div>
+      <BusinessSignupBenefits />
+    </main>
   )
 }

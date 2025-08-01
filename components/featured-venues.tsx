@@ -1,111 +1,97 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Star, MapPin, Users, Heart } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Star, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const featuredVenues = [
   {
-    id: 1,
-    name: "Royal Palace Banquet",
-    location: "DHA, Lahore",
-    rating: 4.8,
-    reviews: 124,
-    capacity: "500-1000",
-    price: "₹80,000",
-    image: "/images/venues/royal-palace-banquet.jpg",
-    features: ["AC Hall", "Parking", "Catering"],
-  },
-  {
-    id: 2,
-    name: "Garden View Marquee",
-    location: "Gulberg, Lahore",
+    id: "royal-palace-banquet",
+    name: "Royal Palace Banquet Hall",
+    location: "Lahore, Pakistan",
+    image: "/images/venues/royal-palace-banquet.png",
     rating: 4.9,
-    reviews: 89,
-    capacity: "200-500",
-    price: "₹60,000",
-    image: "/images/venues/garden-marquee.jpg",
-    features: ["Garden", "Outdoor", "Decoration"],
+    reviews: 150,
+    priceRange: "$$$$",
   },
   {
-    id: 3,
-    name: "Grand Ballroom",
-    location: "Clifton, Karachi",
+    id: "garden-marquee",
+    name: "The Garden Marquee",
+    location: "Karachi, Pakistan",
+    image: "/images/venues/garden-marquee.png",
     rating: 4.7,
-    reviews: 156,
-    capacity: "300-800",
-    price: "₹95,000",
-    image: "/images/venues/grand-ballroom.jpg",
-    features: ["Ballroom", "Valet", "Premium"],
+    reviews: 90,
+    priceRange: "$$$",
+  },
+  {
+    id: "grand-ballroom",
+    name: "Grand Hyatt Ballroom",
+    location: "Islamabad, Pakistan",
+    image: "/images/venues/grand-ballroom.png",
+    rating: 4.8,
+    reviews: 120,
+    priceRange: "$$$$",
   },
 ]
 
 export function FeaturedVenues() {
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-12">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Venues</h2>
-            <p className="text-gray-600 text-lg">Handpicked premium venues for your special day</p>
-          </div>
-          <Button variant="outline">View All Venues</Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <section className="py-12 md:py-16 bg-white">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Featured Venues</h2>
+        <p className="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">
+          Explore our handpicked selection of the most exquisite and popular wedding venues.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {featuredVenues.map((venue) => (
-            <Card key={venue.id} className="overflow-hidden hover:shadow-xl transition-shadow group">
-              <div className="relative">
-                <img
-                  src={venue.image || "/placeholder.svg"}
-                  alt={venue.name}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <button className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
-                  <Heart className="w-4 h-4 text-gray-600" />
-                </button>
-                <div className="absolute bottom-4 left-4">
-                  <div className="flex space-x-1">
-                    {venue.features.slice(0, 2).map((feature) => (
-                      <span key={feature} className="px-2 py-1 bg-black bg-opacity-70 text-white text-xs rounded">
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
+            <Card key={venue.id} className="flex flex-col">
+              <CardHeader className="p-0">
+                <div className="relative w-full h-48">
+                  <Image
+                    src={venue.image || "/placeholder.svg"}
+                    alt={venue.name}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-t-lg"
+                  />
                 </div>
-              </div>
-
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">{venue.name}</h3>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-pink-600">{venue.price}</div>
-                    <div className="text-sm text-gray-600">per event</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center text-gray-600 mb-2">
+              </CardHeader>
+              <CardContent className="p-4 flex-1">
+                <CardTitle className="text-xl font-semibold mb-2">{venue.name}</CardTitle>
+                <div className="flex items-center text-sm text-gray-600 mb-2">
                   <MapPin className="w-4 h-4 mr-1" />
-                  <span className="text-sm">{venue.location}</span>
+                  <span>{venue.location}</span>
                 </div>
-
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                    <span className="text-sm font-medium">{venue.rating}</span>
-                    <span className="text-sm text-gray-600 ml-1">({venue.reviews} reviews)</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Users className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{venue.capacity}</span>
-                  </div>
+                <div className="flex items-center text-sm text-gray-600 mb-2">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                  <span>
+                    {venue.rating} ({venue.reviews} reviews)
+                  </span>
                 </div>
-
-                <Link href={`/venues/${venue.id}`}>
-                  <Button className="w-full bg-pink-600 hover:bg-pink-700">View Details</Button>
-                </Link>
+                <p className="text-gray-700 text-sm">Price Range: {venue.priceRange}</p>
               </CardContent>
+              <CardFooter className="p-4 pt-0">
+                <Link href={`/venues/${venue.id}`} className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full border-pink-500 text-pink-600 hover:bg-pink-50 bg-transparent"
+                  >
+                    View Details
+                  </Button>
+                </Link>
+              </CardFooter>
             </Card>
           ))}
+        </div>
+        <div className="mt-12">
+          <Link href="/venues">
+            <Button
+              size="lg"
+              className="bg-pink-600 hover:bg-pink-700 text-white text-lg px-8 py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
+            >
+              View All Venues
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,153 +1,92 @@
-import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
+import Link from "next/link"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Star, Users, Clock, Heart, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Star, MapPin, Users, Crown, Sparkles, Clock } from "lucide-react"
-import Link from "next/link"
 
 interface SimilarPackagesProps {
-  currentPackageId: number
+  packages: {
+    id: string
+    name: string
+    image: string
+    price: number
+    originalPrice?: number
+    rating: number
+    reviews: number
+    guestCapacity: string
+    duration: string
+    services: string[]
+  }[]
 }
 
-const similarPackages = [
-  {
-    id: 2,
-    name: "Premium Celebration Package",
-    type: "Premium",
-    location: "Gulberg, Lahore",
-    rating: 4.8,
-    reviews: 156,
-    price: 800000,
-    originalPrice: 950000,
-    savings: 150000,
-    guestCapacity: "400-600",
-    duration: "2 Days",
-    image: "/images/packages/premium-celebration.png",
-    badge: "Best Value",
-    badgeColor: "bg-green-500",
-    icon: Sparkles,
-    discount: 16,
-  },
-  {
-    id: 3,
-    name: "Grand Luxury Experience",
-    type: "Luxury",
-    location: "Clifton, Karachi",
-    rating: 4.9,
-    reviews: 124,
-    price: 1200000,
-    originalPrice: 1400000,
-    savings: 200000,
-    guestCapacity: "600-1000",
-    duration: "3 Days",
-    image: "/images/packages/grand-luxury.png",
-    badge: "Premium Choice",
-    badgeColor: "bg-purple-500",
-    icon: Crown,
-    discount: 14,
-  },
-  {
-    id: 5,
-    name: "Elegant Affair Package",
-    type: "Premium",
-    location: "F-7, Islamabad",
-    rating: 4.7,
-    reviews: 167,
-    price: 950000,
-    originalPrice: 1100000,
-    savings: 150000,
-    guestCapacity: "500-800",
-    duration: "2 Days",
-    image: "/images/packages/elegant-affair.png",
-    badge: "Trending",
-    badgeColor: "bg-pink-500",
-    icon: Sparkles,
-    discount: 14,
-  },
-]
-
-const typeColors = {
-  Basic: "bg-blue-100 text-blue-800",
-  Premium: "bg-purple-100 text-purple-800",
-  Luxury: "bg-yellow-100 text-yellow-800",
-  Royal: "bg-red-100 text-red-800",
-}
-
-export function SimilarPackages({ currentPackageId }: SimilarPackagesProps) {
-  const filteredPackages = similarPackages.filter((pkg) => pkg.id !== currentPackageId)
-
+export function SimilarPackages({ packages }: SimilarPackagesProps) {
   return (
-    <div>
-      <h2 className="text-3xl font-bold text-gray-900 mb-8">Similar Packages You Might Like</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {filteredPackages.map((pkg) => {
-          const IconComponent = pkg.icon
-          return (
-            <Card key={pkg.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group">
-              <div className="relative">
-                <img
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Similar Packages You Might Like</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {packages.map((pkg) => (
+          <Card key={pkg.id} className="flex flex-col relative overflow-hidden">
+            {pkg.originalPrice && pkg.price < pkg.originalPrice && (
+              <Badge className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold z-10">
+                Save ${pkg.originalPrice - pkg.price}
+              </Badge>
+            )}
+            <CardHeader className="p-0">
+              <div className="relative w-full h-48">
+                <Image
                   src={pkg.image || "/placeholder.svg"}
                   alt={pkg.name}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-t-lg"
                 />
-                {pkg.discount && (
-                  <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
-                    {pkg.discount}% OFF
-                  </div>
-                )}
-                <div
-                  className={`absolute top-4 right-4 ${pkg.badgeColor} text-white px-2 py-1 rounded text-sm font-medium`}
-                >
-                  {pkg.badge}
-                </div>
               </div>
-
-              <CardContent className="p-6">
-                <div className="flex items-center gap-2 mb-2">
-                  <IconComponent className="w-5 h-5 text-pink-600" />
-                  <h3 className="font-bold text-gray-900 text-lg">{pkg.name}</h3>
-                </div>
-
-                <Badge className={`${typeColors[pkg.type as keyof typeof typeColors]} mb-3`}>{pkg.type}</Badge>
-
-                <div className="flex items-center text-gray-600 mb-2 text-sm">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  <span>{pkg.location}</span>
-                </div>
-
-                <div className="flex items-center justify-between mb-3 text-sm">
-                  <div className="flex items-center">
-                    <Users className="w-4 h-4 mr-1 text-gray-600" />
-                    <span className="text-gray-600">{pkg.guestCapacity}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="w-4 h-4 mr-1 text-gray-600" />
-                    <span className="text-gray-600">{pkg.duration}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center mb-4">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                  <span className="text-sm font-medium">{pkg.rating}</span>
-                  <span className="text-sm text-gray-600 ml-1">({pkg.reviews})</span>
-                </div>
-
-                <div className="text-right mb-4">
-                  <div className="text-2xl font-bold text-pink-600">₹{pkg.price.toLocaleString()}</div>
-                  {pkg.originalPrice && (
-                    <div className="text-sm text-gray-500 line-through">₹{pkg.originalPrice.toLocaleString()}</div>
-                  )}
-                  <div className="text-green-600 font-medium text-sm">Save ₹{pkg.savings.toLocaleString()}</div>
-                </div>
-
-                <Link href={`/packages/${pkg.id}`}>
-                  <Button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700">
-                    View Package Details
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          )
-        })}
+            </CardHeader>
+            <CardContent className="p-4 flex-1">
+              <CardTitle className="text-xl font-semibold mb-2">{pkg.name}</CardTitle>
+              <div className="flex items-center text-sm text-gray-600 mb-2">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                <span>
+                  {pkg.rating} ({pkg.reviews} reviews)
+                </span>
+              </div>
+              <div className="flex items-center text-sm text-gray-600 mb-2">
+                <Users className="w-4 h-4 mr-1" />
+                <span>{pkg.guestCapacity} guests</span>
+                <Clock className="w-4 h-4 ml-4 mr-1" />
+                <span>{pkg.duration}</span>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {pkg.services.map((service, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    <CheckCircle className="w-3 h-3 mr-1" /> {service}
+                  </Badge>
+                ))}
+              </div>
+              <div className="mt-4 flex items-baseline justify-between">
+                <span className="text-2xl font-bold text-pink-600">${pkg.price.toLocaleString()}</span>
+                {pkg.originalPrice && pkg.price < pkg.originalPrice && (
+                  <span className="text-sm text-gray-500 line-through ml-2">${pkg.originalPrice.toLocaleString()}</span>
+                )}
+              </div>
+            </CardContent>
+            <CardFooter className="p-4 pt-0 flex justify-between items-center">
+              <Link href={`/packages/${pkg.id}`} className="flex-1 mr-2">
+                <Button
+                  variant="outline"
+                  className="w-full border-pink-500 text-pink-600 hover:bg-pink-50 bg-transparent"
+                >
+                  View Details
+                </Button>
+              </Link>
+              <Button variant="ghost" size="icon" className="text-gray-500 hover:text-pink-600">
+                <Heart className="w-5 h-5" />
+                <span className="sr-only">Add to Wishlist</span>
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
       </div>
     </div>
   )

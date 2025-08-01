@@ -1,127 +1,153 @@
+import { notFound } from "next/navigation"
 import { VenueDetails } from "@/components/venue-details"
 import { VenueGallery } from "@/components/venue-gallery"
 import { VenueReviews } from "@/components/venue-reviews"
-import { VenueBooking } from "@/components/venue-booking"
 import { SimilarVenues } from "@/components/similar-venues"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+import { VenueBooking } from "@/components/venue-booking"
+import { Separator } from "@/components/ui/separator"
 
-// This would normally come from your database based on the ID
-const venue = {
-  id: 1,
-  name: "Royal Palace Banquet",
-  location: "DHA Phase 5, Lahore",
-  fullAddress: "123 Main Boulevard, DHA Phase 5, Lahore, Punjab, Pakistan",
-  rating: 4.8,
-  reviews: 124,
-  capacity: {
-    min: 500,
-    max: 1000,
+const venues = [
+  {
+    id: "royal-palace-banquet",
+    name: "Royal Palace Banquet Hall",
+    location: "Lahore, Pakistan",
+    description:
+      "A majestic venue perfect for grand weddings and lavish celebrations. Features opulent interiors, high ceilings, and a capacity for up to 1000 guests.",
+    priceRange: "$$$$",
+    capacity: "500-1000 guests",
+    amenities: ["In-house Catering", "Decorations", "Parking", "Bridal Suite", "Sound System"],
+    images: [
+      "/images/venues/royal-palace-banquet.png",
+      "/images/venues/royal-palace-2.png",
+      "/images/venues/royal-palace-3.png",
+      "/images/venues/royal-palace-4.png",
+      "/images/venues/royal-palace-5.png",
+      "/images/venues/royal-palace-6.png",
+    ],
+    rating: 4.9,
+    reviews: 150,
+    type: "Ballroom",
   },
-  price: 80000,
-  originalPrice: 95000,
-  discount: 15,
-  type: "Banquet Hall",
-  verified: true,
-  description:
-    "Royal Palace Banquet is one of Lahore's most prestigious wedding venues, offering an elegant and luxurious setting for your special day. With stunning architecture, world-class amenities, and exceptional service, we ensure your wedding is nothing short of magical.",
-  images: [
-    "/images/venues/royal-palace-banquet.jpg",
-    "/images/venues/royal-palace-2.jpg",
-    "/images/venues/royal-palace-3.jpg",
-    "/images/venues/royal-palace-4.jpg",
-    "/images/venues/royal-palace-5.jpg",
-    "/images/venues/royal-palace-6.jpg",
-  ],
-  amenities: [
-    { name: "Air Conditioning", icon: "❄️", available: true },
-    { name: "Parking for 200+ Cars", icon: "🚗", available: true },
-    { name: "In-house Catering", icon: "🍽️", available: true },
-    { name: "Bridal Room", icon: "👰", available: true },
-    { name: "Sound System", icon: "🔊", available: true },
-    { name: "Stage & Lighting", icon: "💡", available: true },
-    { name: "Generator Backup", icon: "⚡", available: true },
-    { name: "Security", icon: "🛡️", available: true },
-    { name: "Decoration Services", icon: "🎨", available: true },
-    { name: "Photography Area", icon: "📸", available: true },
-    { name: "Wheelchair Accessible", icon: "♿", available: true },
-    { name: "WiFi", icon: "📶", available: true },
-  ],
-  specifications: {
-    area: "15,000 sq ft",
-    ceilingHeight: "18 feet",
-    danceFloor: "Available",
-    kitchenFacility: "Full Commercial Kitchen",
-    washrooms: "6 (3 Male, 3 Female)",
-    powerBackup: "100% Generator Backup",
+  {
+    id: "garden-marquee",
+    name: "The Garden Marquee",
+    location: "Karachi, Pakistan",
+    description:
+      "An enchanting outdoor venue with lush green lawns and elegant marquees, ideal for romantic garden weddings. Accommodates 200-500 guests.",
+    priceRange: "$$$",
+    capacity: "200-500 guests",
+    amenities: ["Outdoor Space", "Decorations", "Parking", "Generator Backup"],
+    images: [
+      "/images/venues/garden-marquee.png",
+      "/placeholder.svg?height=400&width=600",
+      "/placeholder.svg?height=400&width=600",
+    ],
+    rating: 4.7,
+    reviews: 90,
+    type: "Garden",
   },
-  policies: {
-    cancellation: "Free cancellation up to 30 days before event",
-    payment: "50% advance, 50% on event day",
-    timing: "Events allowed from 6 PM to 2 AM",
-    alcohol: "Not permitted",
-    outside_catering: "Not allowed",
-    decoration: "Allowed with prior approval",
+  {
+    id: "grand-ballroom",
+    name: "Grand Hyatt Ballroom",
+    location: "Islamabad, Pakistan",
+    description:
+      "A sophisticated and spacious ballroom within a luxury hotel, offering impeccable service and modern facilities for large gatherings.",
+    priceRange: "$$$$",
+    capacity: "400-800 guests",
+    amenities: ["In-house Catering", "Luxury Suites", "Valet Parking", "Audiovisual Equipment"],
+    images: [
+      "/images/venues/grand-ballroom.png",
+      "/placeholder.svg?height=400&width=600",
+      "/placeholder.svg?height=400&width=600",
+    ],
+    rating: 4.8,
+    reviews: 120,
+    type: "Ballroom",
   },
-  contact: {
-    phone: "+92 300 1234567",
-    email: "info@royalpalacebanquet.com",
-    website: "www.royalpalacebanquet.com",
-    manager: "Ahmed Hassan",
+  {
+    id: "sunset-farmhouse",
+    name: "Sunset Farmhouse",
+    location: "Lahore, Pakistan",
+    description:
+      "A charming rustic farmhouse venue with beautiful sunset views, perfect for intimate and cozy weddings. Features open-air spaces and traditional decor.",
+    priceRange: "$$",
+    capacity: "100-250 guests",
+    amenities: ["Outdoor Space", "Bonfire Area", "Basic Decor", "Parking"],
+    images: [
+      "/images/venues/sunset-farmhouse.png",
+      "/placeholder.svg?height=400&width=600",
+      "/placeholder.svg?height=400&width=600",
+    ],
+    rating: 4.5,
+    reviews: 70,
+    type: "Farmhouse",
   },
-  availability: [
-    { date: "2024-02-15", available: true },
-    { date: "2024-02-16", available: false },
-    { date: "2024-02-17", available: true },
-    // More dates...
-  ],
-}
+  {
+    id: "crystal-convention",
+    name: "Crystal Convention Center",
+    location: "Faisalabad, Pakistan",
+    description:
+      "A modern and versatile convention center with multiple halls, suitable for very large weddings and corporate events. State-of-the-art facilities.",
+    priceRange: "$$$",
+    capacity: "800-2000 guests",
+    amenities: ["Multiple Halls", "Advanced AV", "Ample Parking", "Flexible Layouts"],
+    images: [
+      "/images/venues/crystal-convention.png",
+      "/placeholder.svg?height=400&width=600",
+      "/placeholder.svg?height=400&width=600",
+    ],
+    rating: 4.6,
+    reviews: 100,
+    type: "Convention Center",
+  },
+  {
+    id: "rose-garden-resort",
+    name: "Rose Garden Resort",
+    location: "Murree, Pakistan",
+    description:
+      "A picturesque resort nestled in the hills, offering stunning views and a serene environment for destination weddings. Includes accommodation options.",
+    priceRange: "$$$$",
+    capacity: "150-400 guests",
+    amenities: ["Accommodation", "Scenic Views", "Outdoor & Indoor Spaces", "Recreational Activities"],
+    images: [
+      "/images/venues/rose-garden-resort.png",
+      "/placeholder.svg?height=400&width=600",
+      "/placeholder.svg?height=400&width=600",
+    ],
+    rating: 4.9,
+    reviews: 110,
+    type: "Resort",
+  },
+]
 
 export default function VenueDetailPage({ params }: { params: { id: string } }) {
+  const venue = venues.find((v) => v.id === params.id)
+
+  if (!venue) {
+    notFound()
+  }
+
+  const similarVenues = venues.filter((v) => v.id !== params.id && v.type === venue.type).slice(0, 3)
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/venues">Venues</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{venue.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            <VenueGallery images={venue.images} venueName={venue.name} />
-            <VenueDetails venue={venue} />
-            <VenueReviews venueId={venue.id} rating={venue.rating} totalReviews={venue.reviews} />
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <VenueBooking venue={venue} />
-          </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <VenueGallery images={venue.images} />
+          <VenueDetails venue={venue} />
+          <Separator className="my-8" />
+          <VenueReviews reviews={venue.reviews} rating={venue.rating} />
         </div>
-
-        {/* Similar Venues */}
-        <div className="mt-16">
-          <SimilarVenues currentVenueId={venue.id} />
+        <div className="lg:col-span-1">
+          <VenueBooking venueName={venue.name} />
         </div>
       </div>
+      {similarVenues.length > 0 && (
+        <>
+          <Separator className="my-8" />
+          <SimilarVenues venues={similarVenues} />
+        </>
+      )}
     </div>
   )
 }

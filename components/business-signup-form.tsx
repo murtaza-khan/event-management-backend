@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Upload, Building2, User, MapPin, Camera, Plus, Trash2, Package, Star } from "lucide-react"
+import Link from "next/link"
 
 interface CustomPackage {
   id: string
@@ -43,14 +44,18 @@ export function BusinessSignupForm() {
     phone: "",
     whatsapp: "",
     website: "",
+    password: "",
+    confirmPassword: "",
 
     // Location
     address: "",
     city: "",
     area: "",
+    location: "",
 
     // Services & Pricing
     services: "",
+    serviceType: "",
 
     // Dynamic pricing fields (will be populated based on category)
     // Venue fields
@@ -147,14 +152,23 @@ export function BusinessSignupForm() {
     }
   }
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value, type, checked } = e.target as HTMLInputElement
+    setFormData((prev) => ({
+      ...prev,
+      [id]: type === "checkbox" ? checked : value,
+    }))
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const finalData = {
       ...formData,
       customPackages: customPackages,
     }
-    console.log("Form submitted:", finalData)
-    // Handle form submission
+    console.log("Business Signup Data:", finalData)
+    // Here you would typically send data to your backend
+    alert("Business registration simulated! Check console for data.")
   }
 
   // Custom Package Functions
@@ -507,7 +521,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="businessName"
                   value={formData.businessName}
-                  onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                  onChange={handleChange}
                   placeholder="Enter your business name"
                   required
                 />
@@ -555,7 +569,7 @@ export function BusinessSignupForm() {
                   min="1950"
                   max="2024"
                   value={formData.establishedYear}
-                  onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value })}
+                  onChange={handleChange}
                   placeholder="e.g., 2015"
                 />
               </div>
@@ -566,7 +580,7 @@ export function BusinessSignupForm() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={handleChange}
                 placeholder="Describe your business, services, and what makes you unique..."
                 rows={4}
                 required
@@ -589,7 +603,7 @@ export function BusinessSignupForm() {
               <Input
                 id="ownerName"
                 value={formData.ownerName}
-                onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
+                onChange={handleChange}
                 placeholder="Enter full name"
                 required
               />
@@ -602,7 +616,7 @@ export function BusinessSignupForm() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={handleChange}
                   placeholder="business@example.com"
                   required
                 />
@@ -613,7 +627,7 @@ export function BusinessSignupForm() {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={handleChange}
                   placeholder="+92 300 1234567"
                   required
                 />
@@ -627,7 +641,7 @@ export function BusinessSignupForm() {
                   id="whatsapp"
                   type="tel"
                   value={formData.whatsapp}
-                  onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                  onChange={handleChange}
                   placeholder="+92 300 1234567"
                 />
               </div>
@@ -637,10 +651,32 @@ export function BusinessSignupForm() {
                   id="website"
                   type="url"
                   value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  onChange={handleChange}
                   placeholder="https://www.yourbusiness.com"
                 />
               </div>
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
         )
@@ -662,7 +698,7 @@ export function BusinessSignupForm() {
               <Textarea
                 id="address"
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={handleChange}
                 placeholder="Enter your complete business address"
                 rows={2}
                 required
@@ -691,7 +727,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="area"
                   value={formData.area}
-                  onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                  onChange={handleChange}
                   placeholder="e.g., DHA Phase 5, Gulberg"
                 />
               </div>
@@ -702,9 +738,31 @@ export function BusinessSignupForm() {
               <Textarea
                 id="services"
                 value={formData.services}
-                onChange={(e) => setFormData({ ...formData, services: e.target.value })}
+                onChange={handleChange}
                 placeholder="List all services you provide..."
                 rows={3}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="location">Location (City, Country)</Label>
+              <Input
+                id="location"
+                type="text"
+                placeholder="e.g., Lahore, Pakistan"
+                value={formData.location}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="serviceType">Service Type</Label>
+              <Input
+                id="serviceType"
+                type="text"
+                placeholder="e.g., Venue, Caterer, Photographer"
+                value={formData.serviceType}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -723,7 +781,7 @@ export function BusinessSignupForm() {
                         id={field.key}
                         type={field.type}
                         value={formData[field.key] || ""}
-                        onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+                        onChange={handleChange}
                         placeholder={field.placeholder}
                         required={field.required}
                       />
@@ -1133,9 +1191,9 @@ export function BusinessSignupForm() {
                 />
                 <Label htmlFor="terms" className="text-sm leading-relaxed">
                   I agree to the{" "}
-                  <a href="/terms" className="text-pink-600 hover:underline">
+                  <Link href="/terms" className="text-pink-600 hover:underline">
                     Terms of Service
-                  </a>{" "}
+                  </Link>{" "}
                   and
                   <a href="/privacy" className="text-pink-600 hover:underline ml-1">
                     Privacy Policy
@@ -1163,24 +1221,16 @@ export function BusinessSignupForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Business Registration</span>
-          <span className="text-sm font-normal text-gray-600">Step {currentStep} of 4</span>
-        </CardTitle>
-
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-pink-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 4) * 100}%` }}
-          ></div>
-        </div>
+    <Card className="w-full max-w-lg mx-auto">
+      <CardHeader className="text-center">
+        <CardTitle className="text-3xl font-bold text-gray-900">List Your Business</CardTitle>
+        <CardDescription className="text-gray-600">
+          Join ShaadiDesk and connect with thousands of couples.
+        </CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <form onSubmit={handleSubmit}>
+      <CardContent className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {renderStep()}
 
           <div className="flex justify-between mt-8 pt-6 border-t">
@@ -1193,13 +1243,39 @@ export function BusinessSignupForm() {
                 Next Step
               </Button>
             ) : (
-              <Button type="submit" className="bg-pink-600 hover:bg-pink-700" disabled={!formData.agreeToTerms}>
-                Submit Application
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="agreeToTerms"
+                  checked={formData.agreeToTerms}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, agreeToTerms: typeof checked === "boolean" ? checked : false }))
+                  }
+                  required
+                />
+                <Label htmlFor="agreeToTerms">
+                  I agree to the{" "}
+                  <Link href="#" className="text-pink-600 hover:underline">
+                    Terms and Conditions
+                  </Link>
+                </Label>
+                <Button
+                  type="submit"
+                  className="w-full bg-pink-600 hover:bg-pink-700"
+                  disabled={!formData.agreeToTerms}
+                >
+                  Register Business
+                </Button>
+              </div>
             )}
           </div>
         </form>
       </CardContent>
+      <CardFooter className="text-center text-sm text-gray-600">
+        Already have an account?{" "}
+        <Link href="/auth/login" className="text-pink-600 hover:underline">
+          Login here
+        </Link>
+      </CardFooter>
     </Card>
   )
 }

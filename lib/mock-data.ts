@@ -1,9 +1,3 @@
-import type { LucideIcon } from "lucide-react"
-import { MapPin, Camera, Utensils, Palette, Sparkles } from "lucide-react"
-
-export type EventStatus = "upcoming" | "completed" | "cancelled"
-export type BookingStatus = "confirmed" | "pending" | "cancelled"
-
 export interface BookedEvent {
   id: string
   name: string
@@ -11,10 +5,15 @@ export interface BookedEvent {
   time: string
   location: string
   package: string
-  totalCost: number
-  status: EventStatus
   guests: number
-  vendors: BookedVendor[]
+  totalCost: number
+  status: "Confirmed" | "Pending" | "Completed" | "Cancelled"
+  vendors: {
+    id: string
+    name: string
+    service: string
+    contact: string
+  }[]
 }
 
 export interface BookedVendor {
@@ -22,18 +21,18 @@ export interface BookedVendor {
   name: string
   service: string
   contact: string
-  status: BookingStatus
-  icon: LucideIcon
+  rating: number
+  reviews: number
 }
 
 export interface VendorBooking {
   id: string
   eventName: string
-  eventDate: string
   clientName: string
+  date: string
   service: string
   amount: number
-  status: BookingStatus
+  status: "Confirmed" | "Pending" | "Completed" | "Cancelled"
 }
 
 export interface VendorService {
@@ -41,215 +40,180 @@ export interface VendorService {
   name: string
   category: string
   price: number
-  bookings: number
-  rating: number
+  description: string
+  isAvailable: boolean
 }
 
 export const mockBookedEvents: BookedEvent[] = [
   {
     id: "event-1",
-    name: "Sarah & Ahmed's Wedding",
-    date: "2025-09-15",
+    name: "Aisha & Ali's Wedding",
+    date: "2024-08-15",
     time: "19:00",
     location: "Royal Palace Banquet Hall",
-    package: "Royal Wedding Package",
-    totalCost: 50000,
-    status: "upcoming",
-    guests: 300,
+    package: "Royal Wedding Extravaganza",
+    guests: 750,
+    totalCost: 75000,
+    status: "Confirmed",
     vendors: [
-      {
-        id: "vendor-1",
-        name: "Royal Palace Banquet Hall",
-        service: "Venue",
-        contact: "venue@example.com",
-        status: "confirmed",
-        icon: MapPin,
-      },
-      {
-        id: "vendor-2",
-        name: "Elite Photography",
-        service: "Photography",
-        contact: "photo@example.com",
-        status: "confirmed",
-        icon: Camera,
-      },
-      {
-        id: "vendor-3",
-        name: "Gourmet Delights Catering",
-        service: "Catering",
-        contact: "catering@example.com",
-        status: "confirmed",
-        icon: Utensils,
-      },
-      {
-        id: "vendor-4",
-        name: "Elegant Decorators",
-        service: "Decoration",
-        contact: "decor@example.com",
-        status: "pending",
-        icon: Palette,
-      },
+      { id: "v1", name: "Royal Feast Catering", service: "Catering", contact: "catering@example.com" },
+      { id: "v2", name: "Capture Moments Photography", service: "Photography", contact: "photo@example.com" },
+      { id: "v3", name: "Elegant Events Decor", service: "Decoration", contact: "decor@example.com" },
     ],
   },
   {
     id: "event-2",
-    name: "Birthday Celebration",
-    date: "2024-07-20",
-    time: "14:00",
-    location: "Garden Marquee",
+    name: "Zara & Usman's Engagement",
+    date: "2024-09-20",
+    time: "18:00",
+    location: "The Garden Marquee",
     package: "Premium Celebration Package",
-    totalCost: 15000,
-    status: "completed",
-    guests: 100,
+    guests: 300,
+    totalCost: 45000,
+    status: "Pending",
     vendors: [
-      {
-        id: "vendor-5",
-        name: "Garden Marquee",
-        service: "Venue",
-        contact: "garden@example.com",
-        status: "confirmed",
-        icon: MapPin,
-      },
-      {
-        id: "vendor-6",
-        name: "Spice Garden Catering",
-        service: "Catering",
-        contact: "spice@example.com",
-        status: "confirmed",
-        icon: Utensils,
-      },
+      { id: "v4", name: "Spice Garden Caterers", service: "Catering", contact: "spice@example.com" },
+      { id: "v5", name: "Eternal Frames Studio", service: "Photography", contact: "eternal@example.com" },
     ],
   },
   {
     id: "event-3",
-    name: "Corporate Gala",
-    date: "2025-11-01",
-    time: "18:30",
-    location: "Crystal Convention Center",
-    package: "Grand Luxury Package",
-    totalCost: 75000,
-    status: "upcoming",
+    name: "Fatima & Ahmed's Reception",
+    date: "2024-07-01",
+    time: "20:00",
+    location: "Grand Hyatt Ballroom",
+    package: "Grand Luxury Affair",
     guests: 500,
+    totalCost: 60000,
+    status: "Completed",
     vendors: [
-      {
-        id: "vendor-7",
-        name: "Crystal Convention Center",
-        service: "Venue",
-        contact: "crystal@example.com",
-        status: "confirmed",
-        icon: MapPin,
-      },
-      {
-        id: "vendor-8",
-        name: "Royal Feast Catering",
-        service: "Catering",
-        contact: "royalfeast@example.com",
-        status: "pending",
-        icon: Utensils,
-      },
-      {
-        id: "vendor-9",
-        name: "Sparkle Events",
-        service: "Event Management",
-        contact: "sparkle@example.com",
-        status: "confirmed",
-        icon: Sparkles,
-      },
+      { id: "v6", name: "Gourmet Delights", service: "Catering", contact: "gourmet@example.com" },
+      { id: "v7", name: "Lens Artistry by Ali", service: "Photography", contact: "lens@example.com" },
     ],
   },
+]
+
+export const mockBookedVendors: BookedVendor[] = [
   {
-    id: "event-4",
-    name: "Anniversary Dinner",
-    date: "2024-05-10",
-    time: "20:00",
-    location: "Sunset Farmhouse",
-    package: "Essential Wedding Package",
-    totalCost: 8000,
-    status: "completed",
-    guests: 50,
-    vendors: [
-      {
-        id: "vendor-10",
-        name: "Sunset Farmhouse",
-        service: "Venue",
-        contact: "farmhouse@example.com",
-        status: "confirmed",
-        icon: MapPin,
-      },
-    ],
+    id: "v1",
+    name: "Royal Feast Catering",
+    service: "Catering",
+    contact: "catering@example.com",
+    rating: 4.9,
+    reviews: 180,
+  },
+  {
+    id: "v2",
+    name: "Capture Moments Photography",
+    service: "Photography",
+    contact: "photo@example.com",
+    rating: 4.9,
+    reviews: 160,
+  },
+  {
+    id: "v3",
+    name: "Elegant Events Decor",
+    service: "Decoration",
+    contact: "decor@example.com",
+    rating: 4.9,
+    reviews: 110,
+  },
+  {
+    id: "v4",
+    name: "Spice Garden Caterers",
+    service: "Catering",
+    contact: "spice@example.com",
+    rating: 4.7,
+    reviews: 110,
+  },
+  {
+    id: "v5",
+    name: "Eternal Frames Studio",
+    service: "Photography",
+    contact: "eternal@example.com",
+    rating: 4.8,
+    reviews: 130,
   },
 ]
 
 export const mockVendorBookings: VendorBooking[] = [
   {
-    id: "vbook-1",
-    eventName: "Sarah & Ahmed's Wedding",
-    eventDate: "2025-09-15",
-    clientName: "Sarah Khan",
-    service: "Venue Booking",
-    amount: 25000,
-    status: "confirmed",
+    id: "vb-1",
+    eventName: "Aisha & Ali's Wedding",
+    clientName: "Aisha Khan",
+    date: "2024-08-15",
+    service: "Catering",
+    amount: 30000,
+    status: "Confirmed",
   },
   {
-    id: "vbook-2",
-    eventName: "Corporate Gala",
-    eventDate: "2025-11-01",
-    clientName: "ABC Corp",
-    service: "Venue Booking",
-    amount: 40000,
-    status: "pending",
+    id: "vb-2",
+    eventName: "Zara & Usman's Engagement",
+    clientName: "Zara Malik",
+    date: "2024-09-20",
+    service: "Photography",
+    amount: 15000,
+    status: "Pending",
   },
   {
-    id: "vbook-3",
-    eventName: "Birthday Celebration",
-    eventDate: "2024-07-20",
-    clientName: "John Doe",
-    service: "Catering Service",
-    amount: 8000,
-    status: "completed",
+    id: "vb-3",
+    eventName: "Fatima & Ahmed's Reception",
+    clientName: "Fatima Zahra",
+    date: "2024-07-01",
+    service: "Decoration",
+    amount: 20000,
+    status: "Completed",
   },
   {
-    id: "vbook-4",
-    eventName: "Anniversary Dinner",
-    eventDate: "2024-05-10",
-    clientName: "Jane Smith",
-    service: "Photography Package",
-    amount: 3000,
-    status: "completed",
+    id: "vb-4",
+    eventName: "Hina & Bilal's Mehndi",
+    clientName: "Hina Tariq",
+    date: "2024-10-05",
+    service: "Makeup Artist",
+    amount: 5000,
+    status: "Confirmed",
   },
 ]
 
 export const mockVendorServices: VendorService[] = [
   {
-    id: "vservice-1",
-    name: "Royal Palace Banquet Hall",
-    category: "Venue",
-    price: 25000,
-    bookings: 12,
-    rating: 4.8,
-  },
-  {
-    id: "vservice-2",
-    name: "Elite Photography Package",
-    category: "Photography",
-    price: 3000,
-    bookings: 25,
-    rating: 4.9,
-  },
-  {
-    id: "vservice-3",
-    name: "Gourmet Delights Catering",
-    category: "Catering",
-    price: 8000,
-    bookings: 18,
-    rating: 4.7,
-  },
-  {
-    id: "vservice-4",
-    name: "Elegant Decorators",
-    category: "Decoration",
+    id: "vs-1",
+    name: "Luxury Bridal Makeup",
+    category: "Makeup Artist",
     price: 5000,
-    bookings: 10,
-    rating: 4.5,
+    description: "Full bridal makeup package including hair styling and draping.",
+    isAvailable: true,
+  },
+  {
+    id: "vs-2",
+    name: "Full Day Wedding Photography",
+    category: "Photography",
+    price: 15000,
+    description: "12 hours of wedding photography coverage with album and digital copies.",
+    isAvailable: true,
+  },
+  {
+    id: "vs-3",
+    name: "Grand Buffet Catering",
+    category: "Catering",
+    price: 30000,
+    description: "Catering for 500 guests with 5 main courses, desserts, and drinks.",
+    isAvailable: true,
+  },
+  {
+    id: "vs-4",
+    name: "Stage & Venue Decoration",
+    category: "Decoration",
+    price: 20000,
+    description: "Complete stage and venue decoration with floral arrangements and lighting.",
+    isAvailable: true,
+  },
+  {
+    id: "vs-5",
+    name: "Engagement Photography",
+    category: "Photography",
+    price: 7000,
+    description: "4 hours of engagement photoshoot with all raw and edited images.",
+    isAvailable: true,
   },
 ]

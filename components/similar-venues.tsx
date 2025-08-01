@@ -1,94 +1,63 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Star, MapPin, Users } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Star, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface SimilarVenuesProps {
-  currentVenueId: number
+  venues: {
+    id: string
+    name: string
+    location: string
+    image: string
+    rating: number
+    reviews: number
+    priceRange: string
+  }[]
 }
 
-const similarVenues = [
-  {
-    id: 2,
-    name: "Garden View Marquee",
-    location: "Gulberg, Lahore",
-    rating: 4.9,
-    reviews: 89,
-    capacity: "200-500",
-    price: 60000,
-    image: "/images/venues/garden-marquee.jpg",
-    type: "Marquee",
-  },
-  {
-    id: 3,
-    name: "Grand Ballroom",
-    location: "Clifton, Karachi",
-    rating: 4.7,
-    reviews: 156,
-    capacity: "300-800",
-    price: 95000,
-    image: "/images/venues/grand-ballroom.jpg",
-    type: "Hotel",
-  },
-  {
-    id: 4,
-    name: "Sunset Farmhouse",
-    location: "Bedian Road, Lahore",
-    rating: 4.6,
-    reviews: 78,
-    capacity: "100-300",
-    price: 45000,
-    image: "/images/venues/sunset-farmhouse.jpg",
-    type: "Farmhouse",
-  },
-]
-
-export function SimilarVenues({ currentVenueId }: SimilarVenuesProps) {
-  const filteredVenues = similarVenues.filter((venue) => venue.id !== currentVenueId)
-
+export function SimilarVenues({ venues }: SimilarVenuesProps) {
   return (
-    <div>
+    <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Similar Venues You Might Like</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredVenues.map((venue) => (
-          <Card key={venue.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <div className="relative">
-              <img src={venue.image || "/placeholder.svg"} alt={venue.name} className="w-full h-48 object-cover" />
-              <div className="absolute bottom-4 left-4">
-                <span className="px-2 py-1 bg-black bg-opacity-70 text-white text-xs rounded">{venue.type}</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {venues.map((venue) => (
+          <Card key={venue.id} className="flex flex-col">
+            <CardHeader className="p-0">
+              <div className="relative w-full h-48">
+                <Image
+                  src={venue.image || "/placeholder.svg"}
+                  alt={venue.name}
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-t-lg"
+                />
               </div>
-            </div>
-
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-semibold text-gray-900 text-lg">{venue.name}</h3>
-                <div className="text-right">
-                  <div className="font-bold text-pink-600">₹{venue.price.toLocaleString()}</div>
-                  <div className="text-xs text-gray-600">per event</div>
-                </div>
-              </div>
-
-              <div className="flex items-center text-gray-600 mb-2">
+            </CardHeader>
+            <CardContent className="p-4 flex-1">
+              <CardTitle className="text-xl font-semibold mb-2">{venue.name}</CardTitle>
+              <div className="flex items-center text-sm text-gray-600 mb-2">
                 <MapPin className="w-4 h-4 mr-1" />
-                <span className="text-sm">{venue.location}</span>
+                <span>{venue.location}</span>
               </div>
-
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                  <span className="text-sm font-medium">{venue.rating}</span>
-                  <span className="text-sm text-gray-600 ml-1">({venue.reviews})</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <Users className="w-4 h-4 mr-1" />
-                  <span className="text-sm">{venue.capacity}</span>
-                </div>
+              <div className="flex items-center text-sm text-gray-600 mb-2">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                <span>
+                  {venue.rating} ({venue.reviews} reviews)
+                </span>
               </div>
-
-              <Link href={`/venues/${venue.id}`}>
-                <Button className="w-full bg-pink-600 hover:bg-pink-700">View Details</Button>
-              </Link>
+              <p className="text-gray-700 text-sm">Price Range: {venue.priceRange}</p>
             </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <Link href={`/venues/${venue.id}`} className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full border-pink-500 text-pink-600 hover:bg-pink-50 bg-transparent"
+                >
+                  View Details
+                </Button>
+              </Link>
+            </CardFooter>
           </Card>
         ))}
       </div>

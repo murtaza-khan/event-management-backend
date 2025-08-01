@@ -9,8 +9,8 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   // For demonstration, simulate user types. In a real app, this would come from auth.
   const isAuthenticated = true
-  const isClient = false // Set this to true to see client dashboard, false for vendor
-  const isVendor = true // Set this to true to see vendor dashboard, false for client
+  const isClient = true // Set to true for client dashboard, false for vendor
+  const isVendor = false // Set to true for vendor dashboard, false for client
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -39,10 +39,14 @@ export function Header() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm">
-              <Heart className="w-4 h-4 mr-2" />
-              Wishlist
-            </Button>
+            <Link href="/wishlist">
+              {" "}
+              {/* Added Link for Wishlist */}
+              <Button variant="ghost" size="sm">
+                <Heart className="w-4 h-4 mr-2" />
+                Wishlist
+              </Button>
+            </Link>
             {isAuthenticated &&
               isClient && ( // Show Client Dashboard link if authenticated as client
                 <Link href="/dashboard">
@@ -97,11 +101,15 @@ export function Header() {
               <Link href="/about" className="text-gray-700 hover:text-pink-600">
                 About
               </Link>
-              <div className="flex flex-col space-y-2 pt-4 border-t">
-                <Button variant="ghost" size="sm" className="justify-start">
+              <Link href="/wishlist" className="text-gray-700 hover:text-pink-600">
+                {" "}
+                {/* Added Link for Wishlist */}
+                <Button variant="ghost" size="sm" className="justify-start w-full">
                   <Heart className="w-4 h-4 mr-2" />
                   Wishlist
                 </Button>
+              </Link>
+              <div className="flex flex-col space-y-2 pt-4 border-t">
                 {isAuthenticated && isClient && (
                   <Link href="/dashboard">
                     <Button variant="ghost" size="sm" className="justify-start w-full">

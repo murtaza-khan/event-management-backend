@@ -1,64 +1,42 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Search, Calendar, CreditCard, PartyPopper } from "lucide-react"
-
-const steps = [
-  {
-    step: 1,
-    title: "Search & Browse",
-    description: "Find venues and vendors that match your requirements and budget",
-    icon: Search,
-    color: "bg-pink-100 text-pink-600",
-  },
-  {
-    step: 2,
-    title: "Compare & Select",
-    description: "Compare options, read reviews, and select your favorites",
-    icon: Calendar,
-    color: "bg-purple-100 text-purple-600",
-  },
-  {
-    step: 3,
-    title: "Book & Pay",
-    description: "Secure your booking with easy online payment options",
-    icon: CreditCard,
-    color: "bg-blue-100 text-blue-600",
-  },
-  {
-    step: 4,
-    title: "Celebrate",
-    description: "Enjoy your perfect event with peace of mind",
-    icon: PartyPopper,
-    color: "bg-green-100 text-green-600",
-  },
-]
+import { Search, Calendar, Heart, CheckCircle } from "lucide-react"
 
 export function HowItWorks() {
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
-          <p className="text-gray-600 text-lg">Simple steps to plan your perfect event</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {steps.map((step) => {
-            const IconComponent = step.icon
-            return (
-              <Card key={step.step} className="text-center relative">
-                <CardContent className="p-8">
-                  <div className={`w-16 h-16 rounded-full ${step.color} flex items-center justify-center mx-auto mb-6`}>
-                    <IconComponent className="w-8 h-8" />
-                  </div>
-                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-pink-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    {step.step}
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
-                </CardContent>
-              </Card>
-            )
-          })}
+    <section className="py-12 md:py-16 bg-gray-50">
+      <div className="container mx-auto px-4 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">How It Works</h2>
+        <p className="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">
+          Planning your wedding is simple with ShaadiDesk. Follow these easy steps to create your perfect day.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-pink-100 rounded-full mb-4">
+              <Search className="w-8 h-8 text-pink-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">1. Discover</h3>
+            <p className="text-gray-700">Browse through our extensive list of venues, packages, and vendors.</p>
+          </div>
+          <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-pink-100 rounded-full mb-4">
+              <Heart className="w-8 h-8 text-pink-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">2. Shortlist</h3>
+            <p className="text-gray-700">Add your favorites to your wishlist and compare options side-by-side.</p>
+          </div>
+          <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-pink-100 rounded-full mb-4">
+              <Calendar className="w-8 h-8 text-pink-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">3. Book</h3>
+            <p className="text-gray-700">Secure your chosen services with our easy and secure booking process.</p>
+          </div>
+          <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-md">
+            <div className="w-16 h-16 flex items-center justify-center bg-pink-100 rounded-full mb-4">
+              <CheckCircle className="w-8 h-8 text-pink-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">4. Celebrate</h3>
+            <p className="text-gray-700">Relax and enjoy your perfectly planned wedding day!</p>
+          </div>
         </div>
       </div>
     </section>

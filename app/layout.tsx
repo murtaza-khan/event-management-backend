@@ -8,22 +8,21 @@ import { Footer } from "@/components/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ShaadiDesk - Complete Event Management Platform",
-  description: "Book wedding halls, find makeup artists, caterers, and all event services in Pakistan",
-  keywords: "wedding halls, event management, makeup artist, catering, Pakistan, shaadi",
+  title: "ShaadiDesk - Your Wedding Planning Partner",
+  description: "Plan your dream wedding with ShaadiDesk. Find venues, packages, and vendors.",
     generator: 'v0.dev'
 }
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
     <html lang="en">
       <body className={inter.className}>
         <Header />
-        <main className="min-h-screen">{children}</main>
+        {children}
         <Footer />
       </body>
     </html>
