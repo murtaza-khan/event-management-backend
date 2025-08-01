@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react"
 import { MapPin, Camera, Utensils, Palette, Sparkles } from "lucide-react"
 
 export type EventStatus = "upcoming" | "completed" | "cancelled"
+export type BookingStatus = "confirmed" | "pending" | "cancelled"
 
 export interface BookedEvent {
   id: string
@@ -21,8 +22,27 @@ export interface BookedVendor {
   name: string
   service: string
   contact: string
-  status: "confirmed" | "pending" | "cancelled"
+  status: BookingStatus
   icon: LucideIcon
+}
+
+export interface VendorBooking {
+  id: string
+  eventName: string
+  eventDate: string
+  clientName: string
+  service: string
+  amount: number
+  status: BookingStatus
+}
+
+export interface VendorService {
+  id: string
+  name: string
+  category: string
+  price: number
+  bookings: number
+  rating: number
 }
 
 export const mockBookedEvents: BookedEvent[] = [
@@ -157,5 +177,79 @@ export const mockBookedEvents: BookedEvent[] = [
         icon: MapPin,
       },
     ],
+  },
+]
+
+export const mockVendorBookings: VendorBooking[] = [
+  {
+    id: "vbook-1",
+    eventName: "Sarah & Ahmed's Wedding",
+    eventDate: "2025-09-15",
+    clientName: "Sarah Khan",
+    service: "Venue Booking",
+    amount: 25000,
+    status: "confirmed",
+  },
+  {
+    id: "vbook-2",
+    eventName: "Corporate Gala",
+    eventDate: "2025-11-01",
+    clientName: "ABC Corp",
+    service: "Venue Booking",
+    amount: 40000,
+    status: "pending",
+  },
+  {
+    id: "vbook-3",
+    eventName: "Birthday Celebration",
+    eventDate: "2024-07-20",
+    clientName: "John Doe",
+    service: "Catering Service",
+    amount: 8000,
+    status: "completed",
+  },
+  {
+    id: "vbook-4",
+    eventName: "Anniversary Dinner",
+    eventDate: "2024-05-10",
+    clientName: "Jane Smith",
+    service: "Photography Package",
+    amount: 3000,
+    status: "completed",
+  },
+]
+
+export const mockVendorServices: VendorService[] = [
+  {
+    id: "vservice-1",
+    name: "Royal Palace Banquet Hall",
+    category: "Venue",
+    price: 25000,
+    bookings: 12,
+    rating: 4.8,
+  },
+  {
+    id: "vservice-2",
+    name: "Elite Photography Package",
+    category: "Photography",
+    price: 3000,
+    bookings: 25,
+    rating: 4.9,
+  },
+  {
+    id: "vservice-3",
+    name: "Gourmet Delights Catering",
+    category: "Catering",
+    price: 8000,
+    bookings: 18,
+    rating: 4.7,
+  },
+  {
+    id: "vservice-4",
+    name: "Elegant Decorators",
+    category: "Decoration",
+    price: 5000,
+    bookings: 10,
+    rating: 4.5,
   },
 ]

@@ -3,11 +3,14 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, Heart, LayoutDashboard } from "lucide-react"
+import { Menu, X, User, Heart, LayoutDashboard, Briefcase } from "lucide-react" // Added Briefcase icon
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const isAuthenticated = true // For demonstration, assume user is logged in
+  // For demonstration, simulate user types. In a real app, this would come from auth.
+  const isAuthenticated = true
+  const isClient = true // Set to true for client dashboard, false for vendor
+  const isVendor = false // Set to true for vendor dashboard, false for client
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -40,14 +43,24 @@ export function Header() {
               <Heart className="w-4 h-4 mr-2" />
               Wishlist
             </Button>
-            {isAuthenticated && ( // Show Dashboard link if authenticated
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  <LayoutDashboard className="w-4 h-4 mr-2" />
-                  Dashboard
-                </Button>
-              </Link>
-            )}
+            {isAuthenticated &&
+              isClient && ( // Show Client Dashboard link if authenticated as client
+                <Link href="/dashboard">
+                  <Button variant="ghost" size="sm">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
+                </Link>
+              )}
+            {isAuthenticated &&
+              isVendor && ( // Show Vendor Dashboard link if authenticated as vendor
+                <Link href="/vendor-dashboard">
+                  <Button variant="ghost" size="sm">
+                    <Briefcase className="w-4 h-4 mr-2" />
+                    Vendor Dashboard
+                  </Button>
+                </Link>
+              )}
             {!isAuthenticated && ( // Show Login if not authenticated
               <Link href="/auth/login">
                 <Button variant="ghost" size="sm">
@@ -89,11 +102,19 @@ export function Header() {
                   <Heart className="w-4 h-4 mr-2" />
                   Wishlist
                 </Button>
-                {isAuthenticated && (
+                {isAuthenticated && isClient && (
                   <Link href="/dashboard">
                     <Button variant="ghost" size="sm" className="justify-start w-full">
                       <LayoutDashboard className="w-4 h-4 mr-2" />
                       Dashboard
+                    </Button>
+                  </Link>
+                )}
+                {isAuthenticated && isVendor && (
+                  <Link href="/vendor-dashboard">
+                    <Button variant="ghost" size="sm" className="justify-start w-full">
+                      <Briefcase className="w-4 h-4 mr-2" />
+                      Vendor Dashboard
                     </Button>
                   </Link>
                 )}
