@@ -6,50 +6,41 @@ import { SimilarPackages } from "@/components/similar-packages"
 const packages = [
   {
     id: 1,
-    name: "Royal Wedding",
+    name: "Royal Wedding Package",
     price: 450000,
-    originalPrice: 500000,
+    originalPrice: 550000,
     image: "/images/packages/royal-wedding.png",
     rating: 4.9,
     reviews: 127,
-    guests: "300-500",
+    guests: "200-300",
     duration: "3 Days",
-    location: "Premium Venues",
-    savings: 50000,
-    description:
-      "Experience the ultimate luxury wedding with our Royal Wedding package. This comprehensive package includes everything you need for a grand celebration that will be remembered for a lifetime.",
-    features: [
-      "Luxury 5-star venue booking",
-      "Premium multi-cuisine catering for all guests",
-      "Professional photography and videography team",
-      "Complete venue decoration with premium flowers",
-      "Luxury transportation for bride and groom",
-      "Bridal makeup and styling",
-      "Live music and DJ services",
-      "Wedding planning and coordination",
-      "Guest accommodation assistance",
-      "Traditional ceremony arrangements",
-    ],
+    savings: 100000,
     gallery: [
-      "/images/packages/royal-gallery-1.png",
-      "/images/packages/royal-gallery-2.png",
-      "/images/packages/royal-gallery-3.png",
-      "/images/packages/royal-gallery-4.png",
-      "/images/packages/royal-gallery-5.png",
+      "/images/packages/royal-wedding-gallery-1.png",
+      "/images/packages/royal-wedding-gallery-2.png",
+      "/images/packages/royal-wedding-gallery-3.png",
+      "/images/packages/royal-wedding-gallery-4.png",
+      "/images/packages/royal-wedding-gallery-5.png",
     ],
-    vendors: [
-      {
-        category: "Photography",
-        name: "Elite Wedding Studios",
-        image: "/images/vendors/photography-studio-1.png",
-        rating: 4.9,
-      },
-      {
-        category: "Decoration",
-        name: "Royal Decorators",
-        image: "/images/vendors/decoration-service-1.png",
-        rating: 4.8,
-      },
+    services: [
+      { name: "Premium Venue", description: "Luxury banquet hall with royal decor", included: true },
+      { name: "Luxury Catering", description: "5-course meal with premium ingredients", included: true },
+      { name: "Professional Photography", description: "Full day coverage with edited photos", included: true },
+      { name: "Full Decoration", description: "Complete venue decoration with flowers", included: true },
+      { name: "Live Music", description: "Professional band and DJ services", included: true },
+      { name: "Transportation", description: "Decorated car for bride and groom", included: true },
+      { name: "Makeup & Beauty", description: "Professional makeup artist", included: false },
+      { name: "Video Coverage", description: "Cinematic wedding video", included: false },
+    ],
+    description:
+      "Our most luxurious package designed for grand celebrations. Includes premium venues, gourmet catering, and top-tier services to make your wedding truly royal.",
+    highlights: [
+      "Premium luxury venue with royal ambiance",
+      "Gourmet multi-cuisine catering for 200-300 guests",
+      "Professional photography with same-day editing",
+      "Complete venue decoration with fresh flowers",
+      "Live entertainment and music services",
+      "Luxury transportation for the couple",
     ],
   },
 ]
@@ -69,7 +60,7 @@ export default function PackagePage({ params }: PackagePageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <PackageDetails package={packageData} />

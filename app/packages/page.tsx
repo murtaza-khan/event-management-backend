@@ -5,28 +5,22 @@ import { PackageGrid } from "@/components/package-grid"
 export default function PackagesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Wedding Packages</h1>
-            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-              Complete wedding solutions tailored to your budget and preferences. From intimate ceremonies to grand
-              celebrations.
-            </p>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Wedding Packages</h1>
+          <p className="text-lg text-gray-600">Complete wedding solutions tailored to your budget and preferences</p>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="lg:grid lg:grid-cols-4 lg:gap-8">
-          <div className="lg:col-span-1">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <aside className="lg:w-1/4">
             <PackageFilters />
-          </div>
-          <div className="lg:col-span-3 mt-8 lg:mt-0">
+          </aside>
+
+          <main className="lg:w-3/4">
             <Suspense fallback={<div>Loading packages...</div>}>
               <PackageGrid />
             </Suspense>
-          </div>
+          </main>
         </div>
       </div>
     </div>
