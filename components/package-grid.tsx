@@ -3,244 +3,279 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Star, Users, Clock, MapPin } from "lucide-react"
+import { Star, Users, MapPin, Heart, Camera, Utensils, Palette } from "lucide-react"
 
-interface Package {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  rating: number
-  reviewCount: number
-  duration: string
-  guestCapacity: string
-  location: string
-  services: string[]
-  savings?: number
-  popular?: boolean
-  type: "luxury" | "premium" | "standard" | "budget"
-}
-
-const packages: Package[] = [
+const packages = [
   {
     id: "royal-wedding",
     name: "Royal Wedding Package",
-    price: 850000,
-    originalPrice: 1000000,
+    price: 2500000,
+    originalPrice: 3000000,
     image: "/images/packages/royal-wedding.png",
     rating: 4.9,
-    reviewCount: 127,
-    duration: "3 Days",
-    guestCapacity: "300-500",
+    reviews: 127,
     location: "Lahore",
-    services: ["Venue", "Catering", "Photography", "Decoration", "Transportation"],
-    savings: 150000,
-    popular: true,
-    type: "luxury",
+    guests: "300-500",
+    duration: "3 Days",
+    savings: 500000,
+    featured: true,
+    services: [
+      { name: "Premium Venue", icon: MapPin },
+      { name: "Photography", icon: Camera },
+      { name: "Catering", icon: Utensils },
+      { name: "Decoration", icon: Palette },
+    ],
+    description:
+      "The ultimate luxury wedding experience with premium venues, world-class catering, and professional photography.",
+    highlights: ["5-Star Venue", "Professional Photography", "Gourmet Catering", "Luxury Transportation"],
   },
   {
     id: "premium-celebration",
     name: "Premium Celebration",
-    price: 650000,
-    originalPrice: 750000,
+    price: 1800000,
+    originalPrice: 2200000,
     image: "/images/packages/premium-celebration.png",
     rating: 4.8,
-    reviewCount: 89,
-    duration: "2 Days",
-    guestCapacity: "200-300",
+    reviews: 89,
     location: "Karachi",
-    services: ["Venue", "Catering", "Photography", "Decoration"],
-    savings: 100000,
-    type: "premium",
+    guests: "200-350",
+    duration: "2 Days",
+    savings: 400000,
+    featured: false,
+    services: [
+      { name: "Premium Venue", icon: MapPin },
+      { name: "Photography", icon: Camera },
+      { name: "Catering", icon: Utensils },
+      { name: "Decoration", icon: Palette },
+    ],
+    description: "Elegant celebration package with premium services and beautiful venues for your special day.",
+    highlights: ["Premium Venue", "Professional Photography", "Quality Catering", "Elegant Decoration"],
   },
   {
     id: "grand-luxury",
-    name: "Grand Luxury Experience",
-    price: 1200000,
-    originalPrice: 1400000,
+    name: "Grand Luxury Package",
+    price: 3200000,
+    originalPrice: 3800000,
     image: "/images/packages/grand-luxury.png",
     rating: 5.0,
-    reviewCount: 45,
-    duration: "4 Days",
-    guestCapacity: "500+",
+    reviews: 156,
     location: "Islamabad",
-    services: ["Venue", "Catering", "Photography", "Decoration", "Transportation", "Entertainment"],
-    savings: 200000,
-    type: "luxury",
+    guests: "400-600",
+    duration: "4 Days",
+    savings: 600000,
+    featured: true,
+    services: [
+      { name: "Luxury Resort", icon: MapPin },
+      { name: "Cinematic Photography", icon: Camera },
+      { name: "Fine Dining", icon: Utensils },
+      { name: "Designer Decoration", icon: Palette },
+    ],
+    description: "The most luxurious wedding package with resort venues, fine dining, and cinematic photography.",
+    highlights: ["Luxury Resort", "Cinematic Photography", "Fine Dining", "Designer Decoration"],
   },
   {
     id: "essential-wedding",
     name: "Essential Wedding",
-    price: 250000,
-    originalPrice: 300000,
+    price: 800000,
+    originalPrice: 1000000,
     image: "/images/packages/essential-wedding.png",
-    rating: 4.5,
-    reviewCount: 156,
+    rating: 4.6,
+    reviews: 203,
+    location: "Lahore",
+    guests: "100-200",
     duration: "1 Day",
-    guestCapacity: "100-150",
-    location: "Multiple Cities",
-    services: ["Venue", "Catering", "Photography"],
-    savings: 50000,
-    type: "budget",
+    savings: 200000,
+    featured: false,
+    services: [
+      { name: "Standard Venue", icon: MapPin },
+      { name: "Basic Photography", icon: Camera },
+      { name: "Standard Catering", icon: Utensils },
+      { name: "Simple Decoration", icon: Palette },
+    ],
+    description: "Perfect starter package for intimate weddings with all essential services included.",
+    highlights: ["Quality Venue", "Professional Photos", "Delicious Food", "Beautiful Decoration"],
   },
   {
     id: "elegant-affair",
     name: "Elegant Affair",
-    price: 450000,
-    originalPrice: 520000,
+    price: 1500000,
+    originalPrice: 1800000,
     image: "/images/packages/elegant-affair.png",
     rating: 4.7,
-    reviewCount: 203,
+    reviews: 94,
+    location: "Karachi",
+    guests: "150-300",
     duration: "2 Days",
-    guestCapacity: "150-250",
-    location: "Lahore",
-    services: ["Venue", "Catering", "Photography", "Decoration"],
-    savings: 70000,
-    type: "standard",
+    savings: 300000,
+    featured: false,
+    services: [
+      { name: "Elegant Venue", icon: MapPin },
+      { name: "Photography", icon: Camera },
+      { name: "Premium Catering", icon: Utensils },
+      { name: "Stylish Decoration", icon: Palette },
+    ],
+    description: "Sophisticated wedding package with elegant venues and premium services for discerning couples.",
+    highlights: ["Elegant Venue", "Professional Photography", "Premium Catering", "Stylish Decoration"],
   },
   {
     id: "dream-wedding",
     name: "Dream Wedding",
-    price: 380000,
-    originalPrice: 420000,
+    price: 1200000,
+    originalPrice: 1500000,
     image: "/images/packages/dream-wedding.png",
-    rating: 4.6,
-    reviewCount: 98,
-    duration: "1 Day",
-    guestCapacity: "80-120",
-    location: "Karachi",
-    services: ["Venue", "Catering", "Photography", "Decoration"],
-    savings: 40000,
-    type: "standard",
+    rating: 4.8,
+    reviews: 167,
+    location: "Islamabad",
+    guests: "120-250",
+    duration: "2 Days",
+    savings: 300000,
+    featured: false,
+    services: [
+      { name: "Beautiful Venue", icon: MapPin },
+      { name: "Photography", icon: Camera },
+      { name: "Quality Catering", icon: Utensils },
+      { name: "Romantic Decoration", icon: Palette },
+    ],
+    description:
+      "Make your dream wedding come true with this comprehensive package designed for romantic celebrations.",
+    highlights: ["Beautiful Venue", "Romantic Setup", "Quality Services", "Memorable Experience"],
   },
 ]
 
 interface PackageGridProps {
-  filters: {
-    priceRange: [number, number]
-    packageType: string
-    services: string[]
-    location: string
-    guestCapacity: string
-    duration: string
-  }
+  searchQuery?: string
+  selectedLocation?: string
+  selectedPriceRange?: string
+  selectedGuests?: string
+  selectedServices?: string[]
 }
 
-export default function PackageGrid({ filters }: PackageGridProps) {
-  const [filteredPackages, setFilteredPackages] = useState(packages)
+export function PackageGrid({
+  searchQuery = "",
+  selectedLocation = "",
+  selectedPriceRange = "",
+  selectedGuests = "",
+  selectedServices = [],
+}: PackageGridProps) {
+  const [favorites, setFavorites] = useState<string[]>([])
 
-  // Apply filters
-  const applyFilters = () => {
-    const filtered = packages.filter((pkg) => {
-      // Price range filter
-      if (pkg.price < filters.priceRange[0] || pkg.price > filters.priceRange[1]) {
-        return false
-      }
-
-      // Package type filter
-      if (filters.packageType !== "all" && pkg.type !== filters.packageType) {
-        return false
-      }
-
-      // Services filter
-      if (filters.services.length > 0) {
-        const hasAllServices = filters.services.every((service) =>
-          pkg.services.some((pkgService) => pkgService.toLowerCase().includes(service.toLowerCase())),
-        )
-        if (!hasAllServices) return false
-      }
-
-      // Location filter
-      if (filters.location !== "all" && !pkg.location.toLowerCase().includes(filters.location.toLowerCase())) {
-        return false
-      }
-
-      return true
-    })
-
-    setFilteredPackages(filtered)
+  const toggleFavorite = (packageId: string) => {
+    setFavorites((prev) => (prev.includes(packageId) ? prev.filter((id) => id !== packageId) : [...prev, packageId]))
   }
-
-  // Apply filters whenever filters change
-  useState(() => {
-    applyFilters()
-  })
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-PK", {
       style: "currency",
       currency: "PKR",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
     }).format(price)
   }
+
+  const filteredPackages = packages.filter((pkg) => {
+    // Search query filter
+    if (searchQuery && !pkg.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false
+    }
+
+    // Location filter
+    if (selectedLocation && selectedLocation !== "all" && pkg.location !== selectedLocation) {
+      return false
+    }
+
+    // Price range filter
+    if (selectedPriceRange && selectedPriceRange !== "all") {
+      const [min, max] = selectedPriceRange.split("-").map(Number)
+      if (max && (pkg.price < min || pkg.price > max)) {
+        return false
+      }
+      if (!max && pkg.price < min) {
+        return false
+      }
+    }
+
+    // Guests filter
+    if (selectedGuests && selectedGuests !== "all") {
+      const [minGuests] = selectedGuests.split("-").map(Number)
+      const [pkgMin] = pkg.guests.split("-").map(Number)
+      if (minGuests && pkgMin < minGuests) {
+        return false
+      }
+    }
+
+    // Services filter
+    if (selectedServices.length > 0) {
+      const packageServices = pkg.services.map((s) => s.name.toLowerCase())
+      const hasAllServices = selectedServices.every((service) =>
+        packageServices.some((pkgService) => pkgService.includes(service.toLowerCase())),
+      )
+      if (!hasAllServices) {
+        return false
+      }
+    }
+
+    return true
+  })
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredPackages.map((pkg) => (
-        <Card key={pkg.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+        <Card key={pkg.id} className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden">
           <div className="relative">
             <Image
               src={pkg.image || "/placeholder.svg"}
               alt={pkg.name}
               width={400}
               height={250}
-              className="w-full h-48 object-cover"
+              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
             />
-            {pkg.popular && (
-              <Badge className="absolute top-2 left-2 bg-orange-500 hover:bg-orange-600">Most Popular</Badge>
-            )}
-            {pkg.savings && (
-              <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">
+            {pkg.featured && <Badge className="absolute top-3 left-3 bg-pink-600">Featured</Badge>}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-3 right-3 bg-white/80 hover:bg-white"
+              onClick={() => toggleFavorite(pkg.id)}
+            >
+              <Heart
+                className={`w-4 h-4 ${favorites.includes(pkg.id) ? "fill-pink-600 text-pink-600" : "text-gray-600"}`}
+              />
+            </Button>
+            {pkg.savings > 0 && (
+              <Badge variant="destructive" className="absolute bottom-3 left-3">
                 Save {formatPrice(pkg.savings)}
               </Badge>
             )}
           </div>
 
-          <CardHeader>
-            <CardTitle className="text-lg">{pkg.name}</CardTitle>
-            <div className="flex items-center gap-2">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-lg">{pkg.name}</h3>
+              <div className="flex items-center space-x-1">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-sm font-medium">{pkg.rating}</span>
+                <span className="text-sm text-gray-500">({pkg.reviews})</span>
+              </div>
+            </div>
+
+            <p className="text-gray-600 text-sm mb-3 line-clamp-2">{pkg.description}</p>
+
+            <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
               <div className="flex items-center">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium ml-1">{pkg.rating}</span>
+                <MapPin className="w-4 h-4 mr-1" />
+                {pkg.location}
               </div>
-              <span className="text-sm text-muted-foreground">({pkg.reviewCount} reviews)</span>
-            </div>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold text-primary">{formatPrice(pkg.price)}</div>
-                {pkg.originalPrice && (
-                  <div className="text-sm text-muted-foreground line-through">{formatPrice(pkg.originalPrice)}</div>
-                )}
+              <div className="flex items-center">
+                <Users className="w-4 h-4 mr-1" />
+                {pkg.guests}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span>{pkg.duration}</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4" />
-                <span>{pkg.guestCapacity} guests</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>{pkg.location}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-1">
-              {pkg.services.slice(0, 3).map((service) => (
-                <Badge key={service} variant="secondary" className="text-xs">
-                  {service}
+            <div className="flex flex-wrap gap-1 mb-3">
+              {pkg.services.slice(0, 3).map((service, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {service.name}
                 </Badge>
               ))}
               {pkg.services.length > 3 && (
@@ -249,19 +284,35 @@ export default function PackageGrid({ filters }: PackageGridProps) {
                 </Badge>
               )}
             </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-2xl font-bold text-pink-600">{formatPrice(pkg.price)}</span>
+                  {pkg.originalPrice > pkg.price && (
+                    <span className="text-sm text-gray-500 line-through">{formatPrice(pkg.originalPrice)}</span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">{pkg.duration}</p>
+              </div>
+            </div>
           </CardContent>
 
-          <CardFooter>
-            <Button asChild className="w-full">
-              <Link href={`/packages/${pkg.id}`}>View Details</Link>
-            </Button>
+          <CardFooter className="p-4 pt-0">
+            <Link href={`/packages/${pkg.id}`} className="w-full">
+              <Button className="w-full bg-pink-600 hover:bg-pink-700">View Details</Button>
+            </Link>
           </CardFooter>
         </Card>
       ))}
 
       {filteredPackages.length === 0 && (
         <div className="col-span-full text-center py-12">
-          <p className="text-muted-foreground">No packages found matching your criteria.</p>
+          <div className="text-gray-500 mb-4">
+            <Heart className="w-16 h-16 mx-auto mb-4 opacity-50" />
+            <h3 className="text-xl font-semibold mb-2">No packages found</h3>
+            <p>Try adjusting your filters to see more results.</p>
+          </div>
         </div>
       )}
     </div>
