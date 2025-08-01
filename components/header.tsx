@@ -3,14 +3,14 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, Heart, LayoutDashboard, Briefcase } from "lucide-react" // Added Briefcase icon
+import { Menu, X, User, Heart, LayoutDashboard, Briefcase } from "lucide-react"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   // For demonstration, simulate user types. In a real app, this would come from auth.
   const isAuthenticated = true
-  const isClient = true // Set to true for client dashboard, false for vendor
-  const isVendor = false // Set to true for vendor dashboard, false for client
+  const isClient = false // Set this to true to see client dashboard, false for vendor
+  const isVendor = true // Set this to true to see vendor dashboard, false for client
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">

@@ -1,21 +1,22 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { mockVendorBookings, mockVendorServices } from "@/lib/mock-data"
-import { Calendar, DollarSign, Star, CheckCircle, Clock, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { mockVendorBookings, mockVendorServices } from "@/lib/mock-data"
+import { Calendar, DollarSign, Star } from "lucide-react"
+import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 
-export default function VendorDashboardOverviewPage() {
-  const totalBookings = mockVendorBookings.length
+export default function VendorDashboardOverview() {
   const upcomingBookings = mockVendorBookings.filter(
     (booking) => booking.status === "pending" || booking.status === "confirmed",
-  ).length
+  )
   const totalEarnings = mockVendorBookings.reduce((sum, booking) => sum + booking.amount, 0)
   const averageRating =
     mockVendorServices.reduce((sum, service) => sum + service.rating, 0) / mockVendorServices.length || 0
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold text-gray-900">Vendor Dashboard</h1>
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-gray-800">Dashboard Overview</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
@@ -24,18 +25,18 @@ export default function VendorDashboardOverviewPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalBookings}</div>
+            <div className="text-2xl font-bold">{mockVendorBookings.length}</div>
             <p className="text-xs text-muted-foreground">Across all your services</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Upcoming Bookings</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{upcomingBookings}</div>
-            <p className="text-xs text-muted-foreground">Confirmed or pending</p>
+            <div className="text-2xl font-bold">{upcomingBookings.length}</div>
+            <p className="text-xs text-muted-foreground">Pending or Confirmed</p>
           </CardContent>
         </Card>
         <Card>
@@ -55,7 +56,7 @@ export default function VendorDashboardOverviewPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{averageRating.toFixed(1)}</div>
-            <p className="text-xs text-muted-foreground">Across all your services</p>
+            <p className="text-xs text-muted-foreground">Based on service reviews</p>
           </CardContent>
         </Card>
       </div>
@@ -66,42 +67,59 @@ export default function VendorDashboardOverviewPage() {
         </CardHeader>
         <CardContent>
           {mockVendorBookings.length > 0 ? (
-            <div className="space-y-4">
-              {mockVendorBookings.slice(0, 3).map((booking) => (
-                <div key={booking.id} className="flex items-center justify-between p-4 border rounded-md">
-                  <div>
-                    <h3 className="font-semibold text-lg">{booking.eventName}</h3>
-                    <p className="text-sm text-gray-600">
-                      <Calendar className="inline-block w-4 h-4 mr-1" /> {booking.eventDate}
-                    </p>
-                    <p className="text-sm text-gray-600">Client: {booking.clientName}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-semibold">${booking.amount.toLocaleString()}</span>
-                    {booking.status === "confirmed" && (
-                      <Badge variant="outline" className="bg-green-100 text-green-800">
-                        <CheckCircle className="w-3 h-3 mr-1" /> Confirmed
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Event Name</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockVendorBookings.slice(0, 5).map((booking) => (
+                  <TableRow key={booking.id}>
+                    <TableCell className="font-medium">{booking.eventName}</TableCell>
+                    <TableCell>{booking.eventDate}</TableCell>
+                    <TableCell>{booking.clientName}</TableCell>
+                    <TableCell>{booking.service}</TableCell>
+                    <TableCell>${booking.amount.toLocaleString()}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          booking.status === "confirmed"
+                            ? "default"
+                            : booking.status === "pending"
+                              ? "secondary"
+                              : "destructive"
+                        }
+                      >
+                        {booking.status}
                       </Badge>
-                    )}
-                    {booking.status === "pending" && (
-                      <Badge variant="outline" className="bg-yellow-100 text-yellow-800">
-                        <Clock className="w-3 h-3 mr-1" /> Pending
-                      </Badge>
-                    )}
-                    {booking.status === "cancelled" && (
-                      <Badge variant="outline" className="bg-red-100 text-red-800">
-                        <XCircle className="w-3 h-3 mr-1" /> Cancelled
-                      </Badge>
-                    )}
-                    <Button variant="outline" size="sm">
-                      View
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link href={`/vendor-dashboard/bookings/${booking.id}`}>
+                        <Button variant="outline" size="sm">
+                          View Details
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
-            <p className="text-gray-600">No recent bookings. Your services are waiting to be discovered!</p>
+            <p className="text-center text-muted-foreground">No recent bookings found.</p>
+          )}
+          {mockVendorBookings.length > 5 && (
+            <div className="text-center mt-4">
+              <Link href="/vendor-dashboard/bookings">
+                <Button variant="link">View All Bookings</Button>
+              </Link>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -112,27 +130,48 @@ export default function VendorDashboardOverviewPage() {
         </CardHeader>
         <CardContent>
           {mockVendorServices.length > 0 ? (
-            <div className="space-y-4">
-              {mockVendorServices.map((service) => (
-                <div key={service.id} className="flex items-center justify-between p-4 border rounded-md">
-                  <div>
-                    <h3 className="font-semibold">{service.name}</h3>
-                    <p className="text-sm text-gray-600">{service.category}</p>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-sm text-gray-700">Bookings: {service.bookings}</div>
-                    <div className="text-sm text-gray-700 flex items-center">
-                      <Star className="w-4 h-4 mr-1 text-yellow-500" /> {service.rating.toFixed(1)}
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Service Name</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Bookings</TableHead>
+                  <TableHead>Rating</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockVendorServices.slice(0, 3).map((service) => (
+                  <TableRow key={service.id}>
+                    <TableCell className="font-medium">{service.name}</TableCell>
+                    <TableCell>{service.category}</TableCell>
+                    <TableCell>${service.price.toLocaleString()}</TableCell>
+                    <TableCell>{service.bookings}</TableCell>
+                    <TableCell>
+                      {service.rating.toFixed(1)}{" "}
+                      <Star className="inline-block h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link href={`/vendor-dashboard/services/${service.id}`}>
+                        <Button variant="outline" size="sm">
+                          Edit Service
+                        </Button>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
-            <p className="text-gray-600">You haven't added any services yet. Add your services to get bookings!</p>
+            <p className="text-center text-muted-foreground">No services listed yet.</p>
+          )}
+          {mockVendorServices.length > 3 && (
+            <div className="text-center mt-4">
+              <Link href="/vendor-dashboard/services">
+                <Button variant="link">View All Services</Button>
+              </Link>
+            </div>
           )}
         </CardContent>
       </Card>

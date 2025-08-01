@@ -1,10 +1,8 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Calendar, Users, Settings, LogOut, Package, Heart } from "lucide-react"
+import { LayoutDashboard, Calendar, Users, Package, Heart, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function DashboardSidebar() {
@@ -12,68 +10,54 @@ export function DashboardSidebar() {
 
   const navItems = [
     {
-      name: "Overview",
       href: "/dashboard",
-      icon: Home,
+      icon: LayoutDashboard,
+      label: "Overview",
     },
     {
-      name: "My Events",
       href: "/dashboard/events",
       icon: Calendar,
+      label: "My Events",
     },
     {
-      name: "My Vendors",
       href: "/dashboard/vendors",
       icon: Users,
+      label: "My Vendors",
     },
     {
-      name: "My Packages",
       href: "/dashboard/packages",
       icon: Package,
+      label: "My Packages",
     },
     {
-      name: "Wishlist",
       href: "/dashboard/wishlist",
       icon: Heart,
+      label: "Wishlist",
     },
     {
-      name: "Settings",
       href: "/dashboard/settings",
       icon: Settings,
+      label: "Settings",
     },
   ]
 
   return (
-    <aside className="w-64 bg-gray-900 text-white flex flex-col h-full p-4">
-      <div className="flex items-center justify-center h-16 mb-8">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">SD</span>
-          </div>
-          <span className="text-xl font-bold">ShaadiDesk</span>
-        </Link>
-      </div>
-      <nav className="flex-1 space-y-2">
+    <aside className="w-64 bg-gray-50 border-r h-full p-4 hidden md:flex flex-col">
+      <nav className="space-y-2">
         {navItems.map((item) => (
           <Link
-            key={item.name}
+            key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors",
-              pathname === item.href ? "bg-pink-600 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white",
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-900 transition-all hover:bg-gray-100",
+              pathname === item.href && "bg-gray-100 font-semibold",
             )}
           >
-            <item.icon className="w-5 h-5 mr-3" />
-            {item.name}
+            <item.icon className="h-5 w-5" />
+            {item.label}
           </Link>
         ))}
       </nav>
-      <div className="mt-auto pt-4 border-t border-gray-700">
-        <Button variant="ghost" className="w-full justify-start text-gray-300 hover:bg-gray-700 hover:text-white">
-          <LogOut className="w-5 h-5 mr-3" />
-          Logout
-        </Button>
-      </div>
     </aside>
   )
 }
