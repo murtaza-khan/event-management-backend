@@ -28,18 +28,6 @@ export function Header() {
             <Link href="/packages" className="text-gray-700 hover:text-pink-600 transition-colors">
               Packages
             </Link>
-            <Link href="/photographers" className="text-gray-700 hover:text-pink-600 transition-colors">
-              Photographers
-            </Link>
-            <Link href="/caterers" className="text-gray-700 hover:text-pink-600 transition-colors">
-              Caterers
-            </Link>
-            <Link href="/makeup-artists" className="text-gray-700 hover:text-pink-600 transition-colors">
-              Makeup Artists
-            </Link>
-            <Link href="/decorators" className="text-gray-700 hover:text-pink-600 transition-colors">
-              Decorators
-            </Link>
             <Link href="/about" className="text-gray-700 hover:text-pink-600 transition-colors">
               About
             </Link>
@@ -79,18 +67,6 @@ export function Header() {
               </Link>
               <Link href="/packages" className="text-gray-700 hover:text-pink-600">
                 Packages
-              </Link>
-              <Link href="/photographers" className="text-gray-700 hover:text-pink-600">
-                Photographers
-              </Link>
-              <Link href="/caterers" className="text-gray-700 hover:text-pink-600">
-                Caterers
-              </Link>
-              <Link href="/makeup-artists" className="text-gray-700 hover:text-pink-600">
-                Makeup Artists
-              </Link>
-              <Link href="/decorators" className="text-gray-700 hover:text-pink-600">
-                Decorators
               </Link>
               <Link href="/about" className="text-gray-700 hover:text-pink-600">
                 About

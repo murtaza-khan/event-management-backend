@@ -1,172 +1,300 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Badge } from "@/components/ui/badge"
-import { CalendarIcon, Phone, Mail, MessageCircle, Heart, Share2 } from "lucide-react"
-import { format } from "date-fns"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Calendar, Phone, User, UserPlus, Building2, Heart, Star, Shield, Gift, Crown } from "lucide-react"
+import Link from "next/link"
 
 interface PackageBookingProps {
-  package: {
-    id: number
-    name: string
-    price: number
-    originalPrice: number
-    savings: number
-    guestCapacity: string
-    duration: string
-  }
+  package: any
 }
 
 export function PackageBooking({ package: pkg }: PackageBookingProps) {
-  const [selectedDate, setSelectedDate] = useState<Date>()
-  const [guestCount, setGuestCount] = useState("")
-  const [contactForm, setContactForm] = useState({
+  const [bookingData, setBookingData] = useState({
+    date: "",
+    guests: "",
+    eventType: "",
     name: "",
-    email: "",
     phone: "",
+    email: "",
     message: "",
+    customizations: "",
   })
+  const [showSignupModal, setShowSignupModal] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false) // This would come from your auth context
 
-  const handleInputChange = (field: string, value: string) => {
-    setContactForm((prev) => ({ ...prev, [field]: value }))
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      setShowSignupModal(true)
+      return
+    }
+
+    // Handle booking submission
+    console.log("Package booking data:", bookingData)
   }
 
-  const handleBooking = () => {
-    // Handle booking logic here
-    console.log("Booking package:", pkg.id, {
-      date: selectedDate,
-      guests: guestCount,
-      contact: contactForm,
-    })
+  const handleWishlistClick = () => {
+    if (!isLoggedIn) {
+      setShowSignupModal(true)
+      return
+    }
+    // Handle wishlist action
   }
 
-  const handleQuickContact = () => {
-    // Handle quick contact logic
-    console.log("Quick contact for package:", pkg.id)
-  }
+  const SignupModal = () => (
+    <Dialog open={showSignupModal} onOpenChange={setShowSignupModal}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl">Join ShaadiDesk to Continue</DialogTitle>
+        </DialogHeader>
 
-  return (
-    <div className="space-y-6">
-      {/* Price Card */}
-      <Card className="sticky top-4">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">{pkg.name}</CardTitle>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Heart className="w-4 h-4" />
-              </Button>
-              <Button variant="outline" size="sm">
-                <Share2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Pricing */}
+        <div className="space-y-6">
+          {/* Header Message */}
           <div className="text-center">
-            <div className="text-3xl font-bold text-pink-600">₹{pkg.price.toLocaleString()}</div>
-            {pkg.originalPrice > pkg.price && (
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <span className="text-lg text-gray-500 line-through">₹{pkg.originalPrice.toLocaleString()}</span>
-                <Badge className="bg-green-500">Save ₹{pkg.savings.toLocaleString()}</Badge>
-              </div>
-            )}
-            <p className="text-sm text-gray-600 mt-2">
-              For {pkg.guestCapacity} guests • {pkg.duration}
+            <p className="text-gray-600">
+              Create your free account to book packages, save favorites, and get exclusive member benefits!
             </p>
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-3 gap-2">
-            <Button variant="outline" size="sm" className="flex flex-col items-center p-3 h-auto bg-transparent">
-              <Phone className="w-4 h-4 mb-1" />
-              <span className="text-xs">Call</span>
-            </Button>
-            <Button variant="outline" size="sm" className="flex flex-col items-center p-3 h-auto bg-transparent">
-              <MessageCircle className="w-4 h-4 mb-1" />
-              <span className="text-xs">WhatsApp</span>
-            </Button>
-            <Button variant="outline" size="sm" className="flex flex-col items-center p-3 h-auto bg-transparent">
-              <Mail className="w-4 h-4 mb-1" />
-              <span className="text-xs">Email</span>
-            </Button>
+          {/* Single Event Planner Account Card */}
+          <div className="max-w-md mx-auto">
+            <div className="border-2 border-pink-200 rounded-lg p-6 bg-gradient-to-br from-pink-50 to-purple-50">
+              <div className="text-center mb-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <User className="w-10 h-10 text-pink-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900">Create Your Event Planner Account</h3>
+                <p className="text-gray-600 mt-2">Join thousands of couples planning their perfect events</p>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center text-sm text-gray-700">
+                  <Heart className="w-4 h-4 mr-3 text-pink-500" />
+                  Save packages to wishlist & compare options
+                </div>
+                <div className="flex items-center text-sm text-gray-700">
+                  <Calendar className="w-4 h-4 mr-3 text-pink-500" />
+                  Event planning dashboard & timeline
+                </div>
+                <div className="flex items-center text-sm text-gray-700">
+                  <Gift className="w-4 h-4 mr-3 text-pink-500" />
+                  Exclusive member discounts up to 25%
+                </div>
+                <div className="flex items-center text-sm text-gray-700">
+                  <Shield className="w-4 h-4 mr-3 text-pink-500" />
+                  Secure booking & payment protection
+                </div>
+                <div className="flex items-center text-sm text-gray-700">
+                  <Star className="w-4 h-4 mr-3 text-pink-500" />
+                  Priority customer support
+                </div>
+              </div>
+
+              <div className="bg-pink-100 p-4 rounded-lg mb-6 border border-pink-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-pink-800">🎉 Welcome Offer</span>
+                  <span className="text-2xl font-bold text-pink-600">20% OFF</span>
+                </div>
+                <p className="text-sm text-pink-700">Get 20% discount on your first package booking!</p>
+                <p className="text-xs text-pink-600 mt-1">Valid for 30 days after signup</p>
+              </div>
+
+              <Link href="/auth/signup" onClick={() => setShowSignupModal(false)}>
+                <Button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-lg py-3">
+                  <UserPlus className="w-5 h-5 mr-2" />
+                  Create Free Account
+                </Button>
+              </Link>
+
+              <p className="text-center text-xs text-gray-500 mt-3">Free forever • No hidden fees • Cancel anytime</p>
+            </div>
           </div>
 
-          {/* Booking Form */}
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="event-date">Event Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal bg-transparent"
-                    id="event-date"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+          {/* Vendor Account Link */}
+          <div className="text-center border-t pt-4">
+            <p className="text-sm text-gray-600 mb-2">Are you a vendor instead?</p>
+            <Link href="/business/signup" onClick={() => setShowSignupModal(false)}>
+              <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700">
+                <Building2 className="w-4 h-4 mr-2" />
+                Create Vendor Account
+              </Button>
+            </Link>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex justify-center items-center space-x-6 text-xs text-gray-600">
+              <div className="flex items-center">
+                <Shield className="w-3 h-3 mr-1" />
+                <span>Secure Platform</span>
+              </div>
+              <div className="flex items-center">
+                <Star className="w-3 h-3 mr-1" />
+                <span>4.9/5 Rating</span>
+              </div>
+              <div className="flex items-center">
+                <User className="w-3 h-3 mr-1" />
+                <span>50,000+ Users</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+
+  return (
+    <div className="space-y-6 sticky top-8">
+      {/* Package Summary Card */}
+      <Card className="border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-purple-50">
+        <CardContent className="p-6">
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center mb-2">
+              <Crown className="w-6 h-6 text-pink-600 mr-2" />
+              <span className="text-lg font-semibold text-gray-900">{pkg.type} Package</span>
+            </div>
+            <div className="text-4xl font-bold text-pink-600 mb-1">
+              ₹{pkg.price.toLocaleString()}
+              {pkg.originalPrice && (
+                <span className="text-xl text-gray-500 line-through ml-2">₹{pkg.originalPrice.toLocaleString()}</span>
+              )}
+            </div>
+            <div className="text-green-600 font-semibold text-lg">Save ₹{pkg.savings.toLocaleString()}</div>
+            {pkg.discount && (
+              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium mt-2 inline-block">
+                {pkg.discount}% OFF - Limited Time!
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Duration:</span>
+              <span className="font-medium">{pkg.duration}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Guest Capacity:</span>
+              <span className="font-medium">{pkg.guestCapacity}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Location:</span>
+              <span className="font-medium">{pkg.location}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Services:</span>
+              <span className="font-medium">{Object.keys(pkg.services).length} included</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Booking Form */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Calendar className="w-5 h-5 mr-2" />
+            Book This Package
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="date">Event Date</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={bookingData.date}
+                  onChange={(e) => setBookingData({ ...bookingData, date: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="guests">Number of Guests</Label>
+                <Select onValueChange={(value) => setBookingData({ ...bookingData, guests: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select guests" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="100-200">100-200</SelectItem>
+                    <SelectItem value="200-400">200-400</SelectItem>
+                    <SelectItem value="400-600">400-600</SelectItem>
+                    <SelectItem value="600-800">600-800</SelectItem>
+                    <SelectItem value="800-1000">800-1000</SelectItem>
+                    <SelectItem value="1000+">1000+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div>
-              <Label htmlFor="guest-count">Number of Guests</Label>
+              <Label htmlFor="eventType">Event Type</Label>
+              <Select onValueChange={(value) => setBookingData({ ...bookingData, eventType: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select event type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="wedding">Complete Wedding</SelectItem>
+                  <SelectItem value="engagement">Engagement Ceremony</SelectItem>
+                  <SelectItem value="mehndi">Mehndi Function</SelectItem>
+                  <SelectItem value="reception">Reception Party</SelectItem>
+                  <SelectItem value="anniversary">Anniversary Celebration</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="name">Full Name</Label>
               <Input
-                id="guest-count"
-                type="number"
-                placeholder="Enter guest count"
-                value={guestCount}
-                onChange={(e) => setGuestCount(e.target.value)}
+                id="name"
+                value={bookingData.name}
+                onChange={(e) => setBookingData({ ...bookingData, name: e.target.value })}
+                required
               />
             </div>
 
             <div>
-              <Label htmlFor="contact-name">Your Name</Label>
+              <Label htmlFor="phone">Phone Number</Label>
               <Input
-                id="contact-name"
-                placeholder="Enter your name"
-                value={contactForm.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="contact-email">Email</Label>
-              <Input
-                id="contact-email"
-                type="email"
-                placeholder="Enter your email"
-                value={contactForm.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="contact-phone">Phone Number</Label>
-              <Input
-                id="contact-phone"
+                id="phone"
                 type="tel"
-                placeholder="Enter your phone number"
-                value={contactForm.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
+                value={bookingData.phone}
+                onChange={(e) => setBookingData({ ...bookingData, phone: e.target.value })}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={bookingData.email}
+                onChange={(e) => setBookingData({ ...bookingData, email: e.target.value })}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="customizations">Package Customizations</Label>
+              <Textarea
+                id="customizations"
+                placeholder="Any specific customizations or additional services you'd like..."
+                value={bookingData.customizations}
+                onChange={(e) => setBookingData({ ...bookingData, customizations: e.target.value })}
+                rows={2}
               />
             </div>
 
@@ -174,63 +302,59 @@ export function PackageBooking({ package: pkg }: PackageBookingProps) {
               <Label htmlFor="message">Special Requirements</Label>
               <Textarea
                 id="message"
-                placeholder="Tell us about your special requirements..."
-                value={contactForm.message}
-                onChange={(e) => handleInputChange("message", e.target.value)}
+                placeholder="Tell us about any special requirements or preferences..."
+                value={bookingData.message}
+                onChange={(e) => setBookingData({ ...bookingData, message: e.target.value })}
                 rows={3}
               />
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button onClick={handleBooking} className="w-full bg-pink-600 hover:bg-pink-700">
-              Book This Package
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-lg py-3"
+            >
+              {isLoggedIn ? "Book Package Now" : "Continue to Book"}
             </Button>
-            <Button onClick={handleQuickContact} variant="outline" className="w-full bg-transparent">
-              Get Quote & Details
-            </Button>
-          </div>
 
-          {/* Additional Info */}
-          <div className="text-xs text-gray-600 space-y-1">
-            <p>• Free consultation included</p>
-            <p>• Flexible payment options available</p>
-            <p>• 24/7 customer support</p>
-            <p>• Customization options available</p>
+            {!isLoggedIn && (
+              <p className="text-xs text-center text-gray-500">
+                You'll be asked to create an account to complete your booking
+              </p>
+            )}
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 gap-3">
+        <Button variant="outline" className="flex items-center justify-center bg-transparent">
+          <Phone className="w-4 h-4 mr-2" />
+          Call Now
+        </Button>
+        <Button
+          variant="outline"
+          className="flex items-center justify-center bg-transparent"
+          onClick={handleWishlistClick}
+        >
+          <Heart className="w-4 h-4 mr-2" />
+          Save Package
+        </Button>
+      </div>
+
+      {/* Package Guarantee */}
+      <Card className="bg-green-50 border-green-200">
+        <CardContent className="p-4">
+          <div className="text-center">
+            <Shield className="w-8 h-8 text-green-600 mx-auto mb-2" />
+            <h4 className="font-semibold text-green-800 mb-1">Package Guarantee</h4>
+            <p className="text-sm text-green-700">
+              Free cancellation up to 30 days before your event. Your satisfaction is our priority.
+            </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Contact Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Need Help?</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-3">
-            <Phone className="w-4 h-4 text-pink-600" />
-            <div>
-              <p className="font-medium">Call Us</p>
-              <p className="text-sm text-gray-600">+92 300 1234567</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Mail className="w-4 h-4 text-pink-600" />
-            <div>
-              <p className="font-medium">Email Us</p>
-              <p className="text-sm text-gray-600">info@weddingplanner.com</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <MessageCircle className="w-4 h-4 text-pink-600" />
-            <div>
-              <p className="font-medium">WhatsApp</p>
-              <p className="text-sm text-gray-600">Available 24/7</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <SignupModal />
     </div>
   )
 }
