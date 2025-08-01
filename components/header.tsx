@@ -25,9 +25,6 @@ export function Header() {
             <Link href="/venues" className="text-gray-700 hover:text-pink-600 transition-colors">
               Venues
             </Link>
-            <Link href="/vendors" className="text-gray-700 hover:text-pink-600 transition-colors">
-              Vendors
-            </Link>
             <Link href="/packages" className="text-gray-700 hover:text-pink-600 transition-colors">
               Packages
             </Link>
@@ -42,13 +39,17 @@ export function Header() {
               <Heart className="w-4 h-4 mr-2" />
               Wishlist
             </Button>
-            <Button variant="ghost" size="sm">
-              <User className="w-4 h-4 mr-2" />
-              Login
-            </Button>
-            <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
-              List Your Business
-            </Button>
+            <Link href="/auth/login">
+              <Button variant="ghost" size="sm">
+                <User className="w-4 h-4 mr-2" />
+                Login
+              </Button>
+            </Link>
+            <Link href="/business/signup">
+              <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
+                List Your Business
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -64,9 +65,6 @@ export function Header() {
               <Link href="/venues" className="text-gray-700 hover:text-pink-600">
                 Venues
               </Link>
-              <Link href="/vendors" className="text-gray-700 hover:text-pink-600">
-                Vendors
-              </Link>
               <Link href="/packages" className="text-gray-700 hover:text-pink-600">
                 Packages
               </Link>
@@ -78,13 +76,17 @@ export function Header() {
                   <Heart className="w-4 h-4 mr-2" />
                   Wishlist
                 </Button>
-                <Button variant="ghost" size="sm" className="justify-start">
-                  <User className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-                <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
-                  List Your Business
-                </Button>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm" className="justify-start w-full">
+                    <User className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/business/signup">
+                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
+                    List Your Business
+                  </Button>
+                </Link>
               </div>
             </nav>
           </div>

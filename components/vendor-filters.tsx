@@ -9,7 +9,7 @@ import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface VendorFiltersProps {
-  type: "makeup" | "catering" | "photography"
+  type: "makeup" | "catering" | "photography" | "decoration"
 }
 
 export function VendorFilters({ type }: VendorFiltersProps) {
@@ -22,7 +22,9 @@ export function VendorFilters({ type }: VendorFiltersProps) {
       case "catering":
         return ["Pakistani", "Continental", "Chinese", "BBQ", "Desserts", "Live Counters"]
       case "photography":
-        return ["Wedding", "Pre-Wedding", "Engagement", "Mehndi", "Baraat", "Reception"]
+        return ["Wedding", "Pre-Wedding", "Engagement", "Candid", "Traditional", "Cinematic"]
+      case "decoration":
+        return ["Stage Setup", "Floral", "Lighting", "Modern", "Traditional", "Themed"]
       default:
         return []
     }

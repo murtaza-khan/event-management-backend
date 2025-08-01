@@ -1,5 +1,5 @@
-import { PackageGrid } from "@/components/package-grid"
-import { PackageFilters } from "@/components/package-filters"
+import { VendorFilters } from "@/components/vendor-filters"
+import { DecoratorGrid } from "@/components/decorator-grid"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-export default function PackagesPage() {
+export default function DecoratorsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -20,25 +20,22 @@ export default function PackagesPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Wedding Packages</BreadcrumbPage>
+              <BreadcrumbPage>Decorators</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Wedding Packages</h1>
-          <p className="text-gray-600">
-            All-in-one wedding packages combining venues, photography, catering, and more. Save time and money with our
-            curated deals.
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Professional Decorators</h1>
+          <p className="text-gray-600">Transform your venue with stunning decorations and themes</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
-            <PackageFilters />
+            <VendorFilters type="decoration" />
           </div>
           <div className="lg:col-span-3">
-            <PackageGrid />
+            <DecoratorGrid />
           </div>
         </div>
       </div>

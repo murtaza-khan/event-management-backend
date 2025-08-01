@@ -1,76 +1,151 @@
-import { notFound } from "next/navigation"
 import { PackageDetails } from "@/components/package-details"
 import { PackageBooking } from "@/components/package-booking"
 import { SimilarPackages } from "@/components/similar-packages"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
-const packages = [
-  {
-    id: 1,
-    name: "Royal Wedding Package",
-    price: 450000,
-    originalPrice: 550000,
-    image: "/images/packages/royal-wedding.png",
-    rating: 4.9,
-    reviews: 127,
-    guests: "200-300",
-    duration: "3 Days",
-    savings: 100000,
-    gallery: [
-      "/images/packages/royal-wedding-gallery-1.png",
-      "/images/packages/royal-wedding-gallery-2.png",
-      "/images/packages/royal-wedding-gallery-3.png",
-      "/images/packages/royal-wedding-gallery-4.png",
-      "/images/packages/royal-wedding-gallery-5.png",
-    ],
-    services: [
-      { name: "Premium Venue", description: "Luxury banquet hall with royal decor", included: true },
-      { name: "Luxury Catering", description: "5-course meal with premium ingredients", included: true },
-      { name: "Professional Photography", description: "Full day coverage with edited photos", included: true },
-      { name: "Full Decoration", description: "Complete venue decoration with flowers", included: true },
-      { name: "Live Music", description: "Professional band and DJ services", included: true },
-      { name: "Transportation", description: "Decorated car for bride and groom", included: true },
-      { name: "Makeup & Beauty", description: "Professional makeup artist", included: false },
-      { name: "Video Coverage", description: "Cinematic wedding video", included: false },
-    ],
-    description:
-      "Our most luxurious package designed for grand celebrations. Includes premium venues, gourmet catering, and top-tier services to make your wedding truly royal.",
-    highlights: [
-      "Premium luxury venue with royal ambiance",
-      "Gourmet multi-cuisine catering for 200-300 guests",
-      "Professional photography with same-day editing",
-      "Complete venue decoration with fresh flowers",
-      "Live entertainment and music services",
-      "Luxury transportation for the couple",
-    ],
+// This would normally come from your database based on the ID
+const packageData = {
+  id: 1,
+  name: "Royal Wedding Extravaganza",
+  type: "Luxury",
+  location: "DHA Phase 5, Lahore",
+  rating: 4.9,
+  reviews: 89,
+  price: 1500000,
+  originalPrice: 1800000,
+  savings: 300000,
+  guestCapacity: "800-1200",
+  duration: "3 Days",
+  discount: 17,
+  description:
+    "Experience the ultimate luxury wedding with our Royal Wedding Extravaganza package. This comprehensive package combines the finest venues, world-class services, and premium amenities to create an unforgettable celebration that exceeds all expectations.",
+  images: [
+    "/images/packages/royal-wedding-1.png",
+    "/images/packages/royal-wedding-2.png",
+    "/images/packages/royal-wedding-3.png",
+    "/images/packages/royal-wedding-4.png",
+    "/images/packages/royal-wedding-5.png",
+  ],
+  services: {
+    venue: {
+      name: "Royal Palace Banquet",
+      description: "Premium 5-star banquet hall with elegant interiors",
+      features: ["AC Hall", "Parking for 300+ cars", "Bridal room", "VIP lounge"],
+    },
+    photography: {
+      name: "Capture Moments Studio",
+      description: "Award-winning photography team with cinematic videography",
+      features: ["Pre-wedding shoot", "Drone photography", "Same-day editing", "Digital gallery"],
+    },
+    catering: {
+      name: "Royal Feast Catering",
+      description: "Gourmet dining experience with international and local cuisines",
+      features: ["Live cooking stations", "Welcome drinks", "Dessert counter", "Waiter service"],
+    },
+    decoration: {
+      name: "Royal Decorations",
+      description: "Luxury decoration with fresh flowers and premium lighting",
+      features: ["Stage backdrop", "Hall decoration", "Lighting setup", "Flower arrangements"],
+    },
+    music: {
+      name: "Elite Entertainment",
+      description: "Live music band with professional DJ services",
+      features: ["Live orchestra", "DJ services", "Sound system", "Dance floor lighting"],
+    },
+    makeup: {
+      name: "Glamour Studio",
+      description: "Professional bridal makeup and hair styling",
+      features: ["Bridal makeup", "Hair styling", "Trial session", "Touch-up kit"],
+    },
+    transportation: {
+      name: "Luxury Car Rentals",
+      description: "Decorated luxury cars for the wedding party",
+      features: ["Bridal car", "Family transport", "Decoration", "Professional drivers"],
+    },
+    extras: {
+      name: "Additional Services",
+      description: "Complete wedding coordination and special touches",
+      features: ["Event coordinator", "Wedding favors", "Guest management", "Timeline planning"],
+    },
   },
-]
-
-interface PackagePageProps {
-  params: {
-    id: string
-  }
+  timeline: [
+    { day: "Day 1", event: "Mehndi Ceremony", description: "Traditional mehndi celebration with music and dance" },
+    { day: "Day 2", event: "Nikah & Reception", description: "Sacred nikah ceremony followed by grand reception" },
+    { day: "Day 3", event: "Walima", description: "Final celebration with family and friends" },
+  ],
+  inclusions: [
+    "Complete venue booking for 3 days",
+    "Professional photography & videography",
+    "Luxury catering for all events",
+    "Complete decoration & lighting",
+    "Live music band + DJ services",
+    "Bridal makeup & hair styling",
+    "Decorated transportation",
+    "Wedding favors & gifts",
+    "Dedicated event coordinator",
+    "Fresh flower arrangements",
+    "Guest management services",
+    "Timeline planning & execution",
+  ],
+  exclusions: [
+    "Guest accommodation",
+    "Wedding invitations",
+    "Bridal outfit & jewelry",
+    "Additional photography hours",
+    "Extra decoration items",
+    "Alcoholic beverages",
+  ],
+  terms: [
+    "50% advance payment required to confirm booking",
+    "Final payment due 7 days before event",
+    "Free cancellation up to 30 days before event",
+    "Package prices valid for 6 months from booking",
+    "Additional guests charged at ₹2,500 per person",
+    "Menu tasting session included",
+  ],
 }
 
-export default function PackagePage({ params }: PackagePageProps) {
-  const packageData = packages.find((pkg) => pkg.id === Number.parseInt(params.id))
-
-  if (!packageData) {
-    notFound()
-  }
-
+export default function PackageDetailPage({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/packages">Packages</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{packageData.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
           <div className="lg:col-span-2">
             <PackageDetails package={packageData} />
           </div>
+
+          {/* Sidebar */}
           <div className="lg:col-span-1">
             <PackageBooking package={packageData} />
           </div>
         </div>
 
-        <div className="mt-12">
+        {/* Similar Packages */}
+        <div className="mt-16">
           <SimilarPackages currentPackageId={packageData.id} />
         </div>
       </div>
