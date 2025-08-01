@@ -1,35 +1,29 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Phone, Mail, MapPin, Users, Star, Building, CalendarDays } from "lucide-react"
+import { Users, Building, MapPin, Award, CheckCircle, Phone, Mail, Map, DollarSign } from "lucide-react"
 
 export default function AboutPage() {
   return (
-    <div className="bg-white">
+    <div className="w-full">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 py-20 md:py-32 text-center">
-        <div className="container mx-auto px-4 relative z-10">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
-            Your Dream Event, Our Passion
-          </h1>
-          <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-10">
-            At ShaadiDesk, we believe every celebration is a unique story waiting to be told. We connect you with the
-            finest vendors to bring your vision to life, seamlessly and stress-free.
+      <section className="relative bg-gradient-to-r from-pink-500 to-purple-600 text-white py-20 md:py-32 text-center">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up">About ShaadiDesk</h1>
+          <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto animate-fade-in-up delay-200">
+            Your trusted partner in creating unforgettable wedding experiences. We connect you with the best venues and
+            vendors to make your dream wedding a reality.
           </p>
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center gap-4 animate-fade-in-up delay-400">
             <Link href="/packages">
-              <Button
-                size="lg"
-                className="bg-pink-600 hover:bg-pink-700 text-white text-lg px-8 py-3 rounded-full shadow-lg transition-transform transform hover:scale-105"
-              >
+              <Button className="bg-white text-pink-600 hover:bg-gray-100 px-8 py-3 rounded-full text-lg font-semibold shadow-lg">
                 Explore Packages
               </Button>
             </Link>
             <Link href="/business/signup">
               <Button
-                size="lg"
                 variant="outline"
-                className="border-pink-600 text-pink-600 hover:bg-pink-50 text-lg px-8 py-3 rounded-full shadow-lg transition-transform transform hover:scale-105 bg-transparent"
+                className="border-white text-white hover:bg-white hover:text-pink-600 px-8 py-3 rounded-full text-lg font-semibold shadow-lg bg-transparent"
               >
                 List Your Business
               </Button>
@@ -41,7 +35,7 @@ export default function AboutPage() {
       {/* Statistics Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">ShaadiDesk by the Numbers</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Our Impact in Numbers</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
               <Users className="w-12 h-12 text-pink-600 mb-4" />
@@ -49,17 +43,17 @@ export default function AboutPage() {
               <p className="text-gray-600">Happy Couples</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-              <Star className="w-12 h-12 text-purple-600 mb-4" />
+              <Building className="w-12 h-12 text-purple-600 mb-4" />
               <h3 className="text-4xl font-bold text-gray-900">500+</h3>
               <p className="text-gray-600">Trusted Vendors</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-              <MapPin className="w-12 h-12 text-indigo-600 mb-4" />
+              <MapPin className="w-12 h-12 text-pink-600 mb-4" />
               <h3 className="text-4xl font-bold text-gray-900">50+</h3>
               <p className="text-gray-600">Cities Covered</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-              <CalendarDays className="w-12 h-12 text-teal-600 mb-4" />
+              <Award className="w-12 h-12 text-purple-600 mb-4" />
               <h3 className="text-4xl font-bold text-gray-900">5 Years</h3>
               <p className="text-gray-600">Experience</p>
             </div>
@@ -68,73 +62,69 @@ export default function AboutPage() {
       </section>
 
       {/* Our Story Section */}
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="lg:order-2">
+          <div className="relative h-96 w-full rounded-lg overflow-hidden shadow-lg">
             <Image
               src="/images/about/our-story.png"
               alt="Our Story"
-              width={800}
-              height={600}
-              className="rounded-lg shadow-xl object-cover w-full h-auto"
+              layout="fill"
+              objectFit="cover"
+              className="transition-transform duration-500 hover:scale-105"
             />
           </div>
-          <div className="lg:order-1">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Our Story: Crafting Unforgettable Moments
-            </h2>
-            <p className="text-gray-700 leading-relaxed mb-6">
-              ShaadiDesk was founded in 2019 by Sarah Ahmed, a passionate event planner who saw a gap in the market for
-              a reliable and comprehensive platform connecting clients with top-tier event vendors. Frustrated by the
-              fragmented process of finding and coordinating services, she envisioned a seamless solution that would
-              simplify event planning for everyone.
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Our Story: From a Dream to Reality</h2>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              ShaadiDesk was founded in 2020 by Sarah Ahmed, a passionate event planner who saw a gap in the market for
+              a streamlined, trustworthy platform connecting couples with top-tier wedding vendors. Frustrated by the
+              fragmented and often overwhelming process of wedding planning, she envisioned a solution that would
+              simplify every step, from venue selection to vendor coordination.
             </p>
-            <p className="text-gray-700 leading-relaxed mb-6">
-              Starting with a small team and a big dream, ShaadiDesk quickly grew, driven by a commitment to quality,
-              transparency, and exceptional customer service. We've expanded our network to include hundreds of verified
-              vendors across various categories, from luxurious venues to talented makeup artists, ensuring every aspect
-              of your event is covered.
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Starting as a small team, ShaadiDesk quickly grew, driven by a commitment to transparency, quality, and
+              exceptional customer service. We built strong relationships with verified vendors, curated comprehensive
+              packages, and developed intuitive tools to empower couples to plan their perfect day with confidence and
+              ease.
             </p>
             <p className="text-gray-700 leading-relaxed">
-              Today, ShaadiDesk stands as a testament to our dedication to making event planning joyful and stress-free.
-              We are proud to have helped thousands of couples and families create their perfect celebrations, building
-              a community where dreams come to life.
+              Today, ShaadiDesk is a leading platform, having helped thousands of couples create unforgettable memories.
+              We continue to innovate, expand our network, and refine our services, always keeping our founding vision
+              at heart: to make wedding planning a joyful and stress-free experience for everyone.
             </p>
           </div>
         </div>
       </section>
 
       {/* Our Values Section */}
-      <section className="py-16 md:py-24 bg-gray-50">
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">Our Core Values</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Our Core Values</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
               <CheckCircle className="w-12 h-12 text-pink-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Quality First</h3>
               <p className="text-gray-600">
-                We partner only with verified, top-rated vendors to ensure every service meets the highest standards.
+                We partner only with top-rated venues and vendors, ensuring excellence in every service.
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
               <Users className="w-12 h-12 text-purple-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Customer Focused</h3>
               <p className="text-gray-600">
-                Your satisfaction is our priority. We provide personalized support and tailor solutions to your needs.
+                Your satisfaction is our priority. We offer personalized support and tailored solutions.
               </p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <Building className="w-12 h-12 text-indigo-600 mx-auto mb-4" />
+              <DollarSign className="w-12 h-12 text-pink-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Transparent Pricing</h3>
-              <p className="text-gray-600">
-                No hidden fees. We ensure clear and competitive pricing for all our packages and services.
-              </p>
+              <p className="text-gray-600">No hidden fees. Clear, upfront pricing for all packages and services.</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <Star className="w-12 h-12 text-teal-600 mx-auto mb-4" />
+              <Award className="w-12 h-12 text-purple-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Expert Support</h3>
               <p className="text-gray-600">
-                Our team of experienced planners is always ready to assist you at every step of your journey.
+                Our team of experienced planners is here to guide you every step of the way.
               </p>
             </div>
           </div>
@@ -142,109 +132,74 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">Meet Our Team</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Meet Our Team</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-              <Image
-                src="/images/about/sarah-ahmed.png"
-                alt="Sarah Ahmed"
-                width={160}
-                height={160}
-                className="rounded-full mx-auto mb-4 object-cover w-40 h-40"
-              />
-              <h3 className="text-xl font-semibold text-gray-900 mb-1">Sarah Ahmed</h3>
-              <p className="text-pink-600 font-medium mb-2">Founder & CEO</p>
-              <p className="text-gray-600">
-                With a background in event management and a passion for creating memorable experiences, Sarah leads
-                ShaadiDesk with vision and dedication.
-              </p>
+            <div className="flex flex-col items-center">
+              <div className="relative w-40 h-40 rounded-full overflow-hidden mb-4 shadow-lg">
+                <Image src="/images/about/team-sarah.png" alt="Sarah Ahmed" layout="fill" objectFit="cover" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">Sarah Ahmed</h3>
+              <p className="text-pink-600 font-medium">Founder & CEO</p>
+              <p className="text-gray-600 mt-2">Visionary leader passionate about simplifying wedding planning.</p>
             </div>
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-              <Image
-                src="/images/about/ali-hassan.png"
-                alt="Ali Hassan"
-                width={160}
-                height={160}
-                className="rounded-full mx-auto mb-4 object-cover w-40 h-40"
-              />
-              <h3 className="text-xl font-semibold text-gray-900 mb-1">Ali Hassan</h3>
-              <p className="text-purple-600 font-medium mb-2">Head of Operations</p>
-              <p className="text-gray-600">
-                Ali ensures the smooth functioning of all our services, optimizing processes to deliver seamless
-                experiences for clients and vendors.
-              </p>
+            <div className="flex flex-col items-center">
+              <div className="relative w-40 h-40 rounded-full overflow-hidden mb-4 shadow-lg">
+                <Image src="/images/about/team-ali.png" alt="Ali Hassan" layout="fill" objectFit="cover" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">Ali Hassan</h3>
+              <p className="text-purple-600 font-medium">Head of Operations</p>
+              <p className="text-gray-600 mt-2">Ensures seamless execution and operational excellence.</p>
             </div>
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-              <Image
-                src="/images/about/fatima-khan.png"
-                alt="Fatima Khan"
-                width={160}
-                height={160}
-                className="rounded-full mx-auto mb-4 object-cover w-40 h-40"
-              />
-              <h3 className="text-xl font-semibold text-gray-900 mb-1">Fatima Khan</h3>
-              <p className="text-indigo-600 font-medium mb-2">Customer Success Manager</p>
-              <p className="text-gray-600">
-                Fatima is dedicated to ensuring every client has a positive experience, providing support and guidance
-                throughout their planning journey.
-              </p>
+            <div className="flex flex-col items-center">
+              <div className="relative w-40 h-40 rounded-full overflow-hidden mb-4 shadow-lg">
+                <Image src="/images/about/team-fatima.png" alt="Fatima Khan" layout="fill" objectFit="cover" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">Fatima Khan</h3>
+              <p className="text-pink-600 font-medium">Customer Success Manager</p>
+              <p className="text-gray-600 mt-2">Dedicated to ensuring every client has a delightful experience.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Mission Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
-          <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-10">
-            To empower individuals and businesses to create extraordinary events by providing a trusted, user-friendly
-            platform that connects them with the best event services and resources.
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto mb-8">
+            To empower couples to plan their dream wedding with ease, confidence, and joy, by providing a comprehensive,
+            transparent, and supportive platform that connects them with the best wedding professionals.
           </p>
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Why Choose ShaadiDesk?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="flex items-start text-left">
-              <CheckCircle className="w-6 h-6 text-pink-600 mr-3 mt-1 flex-shrink-0" />
-              <p className="text-gray-700">
-                <strong className="font-semibold">Verified Vendors:</strong> Access a curated list of top-rated and
-                reliable professionals.
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="bg-white p-6 rounded-lg shadow-md text-left">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Why Choose ShaadiDesk?</h3>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                  Verified Vendors: Handpicked and vetted professionals.
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                  Complete Packages: All-inclusive options for every budget.
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                  Expert Support: Dedicated team to assist you.
+                </li>
+                <li className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                  Best Prices: Competitive and transparent pricing.
+                </li>
+              </ul>
             </div>
-            <div className="flex items-start text-left">
-              <CheckCircle className="w-6 h-6 text-purple-600 mr-3 mt-1 flex-shrink-0" />
+            <div className="bg-white p-6 rounded-lg shadow-md text-left">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Our Vision</h3>
               <p className="text-gray-700">
-                <strong className="font-semibold">Complete Packages:</strong> Find comprehensive packages tailored to
-                various needs and budgets.
-              </p>
-            </div>
-            <div className="flex items-start text-left">
-              <CheckCircle className="w-6 h-6 text-indigo-600 mr-3 mt-1 flex-shrink-0" />
-              <p className="text-gray-700">
-                <strong className="font-semibold">Expert Support:</strong> Get personalized assistance from our
-                experienced event planners.
-              </p>
-            </div>
-            <div className="flex items-start text-left">
-              <CheckCircle className="w-6 h-6 text-teal-600 mr-3 mt-1 flex-shrink-0" />
-              <p className="text-gray-700">
-                <strong className="font-semibold">Best Prices:</strong> Enjoy competitive pricing and exclusive deals on
-                services.
-              </p>
-            </div>
-            <div className="flex items-start text-left">
-              <CheckCircle className="w-6 h-6 text-pink-600 mr-3 mt-1 flex-shrink-0" />
-              <p className="text-gray-700">
-                <strong className="font-semibold">Seamless Planning:</strong> Our platform simplifies every step, from
-                discovery to booking.
-              </p>
-            </div>
-            <div className="flex items-start text-left">
-              <CheckCircle className="w-6 h-6 text-purple-600 mr-3 mt-1 flex-shrink-0" />
-              <p className="text-gray-700">
-                <strong className="font-semibold">Customer Reviews:</strong> Make informed decisions with real client
-                testimonials.
+                To be the leading global platform for wedding planning, recognized for our innovation, reliability, and
+                commitment to creating magical moments for couples worldwide. We aim to continuously expand our services
+                and reach, making dream weddings accessible to everyone, everywhere.
               </p>
             </div>
           </div>
@@ -252,55 +207,51 @@ export default function AboutPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Get in Touch</h2>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto mb-10">
-            Have questions or need assistance? Our team is here to help you plan your perfect event.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Get In Touch</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
               <Phone className="w-12 h-12 text-pink-600 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Call Us</h3>
-              <p className="text-gray-600 mb-2">+92 300 1234567</p>
-              <p className="text-sm text-gray-500">Mon - Fri, 9 AM - 6 PM (PKT)</p>
+              <p className="text-gray-600">+1 (123) 456-7890</p>
+              <p className="text-gray-600">Mon - Fri, 9 AM - 6 PM EST</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
               <Mail className="w-12 h-12 text-purple-600 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Email Us</h3>
-              <p className="text-gray-600 mb-2">info@shaadidesk.com</p>
-              <p className="text-sm text-gray-500">We typically respond within 24 hours.</p>
+              <p className="text-gray-600">info@shaadidesk.com</p>
+              <p className="text-gray-600">We respond within 24 hours</p>
             </div>
             <div className="bg-gray-50 p-6 rounded-lg shadow-md flex flex-col items-center">
-              <MapPin className="w-12 h-12 text-indigo-600 mb-4" />
+              <Map className="w-12 h-12 text-pink-600 mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Visit Us</h3>
-              <p className="text-gray-600 text-center">123 Event Plaza, Gulberg III, Lahore, Pakistan</p>
+              <p className="text-gray-600">123 Wedding Lane, Suite 456</p>
+              <p className="text-gray-600">Dream City, DC 98765</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Final Call to Action */}
-      <section className="bg-gradient-to-r from-pink-600 to-purple-700 py-16 text-white text-center">
+      {/* Call to Action Section */}
+      <section className="bg-gradient-to-r from-pink-500 to-purple-600 text-white py-16 text-center">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Plan Your Perfect Event?</h2>
-          <p className="text-lg md:text-xl mb-8">Join ShaadiDesk today and turn your event dreams into reality.</p>
-          <div className="flex justify-center space-x-4">
-            <Link href="/auth/signup">
-              <Button
-                size="lg"
-                className="bg-white text-pink-600 hover:bg-gray-100 text-lg px-8 py-3 rounded-full shadow-lg transition-transform transform hover:scale-105"
-              >
-                Sign Up Now
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Plan Your Dream Wedding?</h2>
+          <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto">
+            Join thousands of happy couples who trusted ShaadiDesk for their special day.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link href="/packages">
+              <Button className="bg-white text-pink-600 hover:bg-gray-100 px-8 py-3 rounded-full text-lg font-semibold shadow-lg">
+                Explore Packages
               </Button>
             </Link>
-            <Link href="/packages">
+            <Link href="/auth/signup">
               <Button
-                size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-pink-600 text-lg px-8 py-3 rounded-full shadow-lg transition-transform transform hover:scale-105 bg-transparent"
+                className="border-white text-white hover:bg-white hover:text-pink-600 px-8 py-3 rounded-full text-lg font-semibold shadow-lg bg-transparent"
               >
-                Browse Packages
+                Sign Up Now
               </Button>
             </Link>
           </div>

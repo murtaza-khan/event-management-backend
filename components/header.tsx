@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, Heart, LayoutDashboard } from "lucide-react" // Added LayoutDashboard icon
+import { Menu, X, User, Heart, LayoutDashboard } from "lucide-react"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -40,28 +40,29 @@ export function Header() {
               <Heart className="w-4 h-4 mr-2" />
               Wishlist
             </Button>
-            {isAuthenticated ? (
+            {isAuthenticated && ( // Show Dashboard link if authenticated
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm">
                   <LayoutDashboard className="w-4 h-4 mr-2" />
                   Dashboard
                 </Button>
               </Link>
-            ) : (
-              <>
-                <Link href="/auth/login">
-                  <Button variant="ghost" size="sm">
-                    <User className="w-4 h-4 mr-2" />
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/business/signup">
-                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
-                    List Your Business
-                  </Button>
-                </Link>
-              </>
             )}
+            {!isAuthenticated && ( // Show Login if not authenticated
+              <Link href="/auth/login">
+                <Button variant="ghost" size="sm">
+                  <User className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+              </Link>
+            )}
+            <Link href="/business/signup">
+              {" "}
+              {/* Always show List Your Business */}
+              <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
+                List Your Business
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -88,28 +89,27 @@ export function Header() {
                   <Heart className="w-4 h-4 mr-2" />
                   Wishlist
                 </Button>
-                {isAuthenticated ? (
+                {isAuthenticated && (
                   <Link href="/dashboard">
                     <Button variant="ghost" size="sm" className="justify-start w-full">
                       <LayoutDashboard className="w-4 h-4 mr-2" />
                       Dashboard
                     </Button>
                   </Link>
-                ) : (
-                  <>
-                    <Link href="/auth/login">
-                      <Button variant="ghost" size="sm" className="justify-start w-full">
-                        <User className="w-4 h-4 mr-2" />
-                        Login
-                      </Button>
-                    </Link>
-                    <Link href="/business/signup">
-                      <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
-                        List Your Business
-                      </Button>
-                    </Link>
-                  </>
                 )}
+                {!isAuthenticated && (
+                  <Link href="/auth/login">
+                    <Button variant="ghost" size="sm" className="justify-start w-full">
+                      <User className="w-4 h-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
+                )}
+                <Link href="/business/signup">
+                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
+                    List Your Business
+                  </Button>
+                </Link>
               </div>
             </nav>
           </div>
