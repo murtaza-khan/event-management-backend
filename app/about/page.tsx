@@ -131,7 +131,7 @@ export default function AboutPage() {
               <div className="relative">
                 <Image
                   src="/images/about/our-story.png"
-                  alt="Our Story"
+                  alt="Our Story - ShaadiDesk Team"
                   width={600}
                   height={400}
                   className="rounded-lg shadow-lg"
