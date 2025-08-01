@@ -3,94 +3,105 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, User, Heart } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu, Search, Heart, User } from "lucide-react"
 
-export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+export default function Header() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const navigation = [
+    { name: "Home", href: "/" },
+    { name: "Venues", href: "/venues" },
+    { name: "Packages", href: "/packages" },
+    { name: "Photographers", href: "/photographers" },
+    { name: "Caterers", href: "/caterers" },
+    { name: "Makeup Artists", href: "/makeup-artists" },
+    { name: "Decorators", href: "/decorators" },
+    { name: "About", href: "/about" },
+  ]
 
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">SD</span>
+            <div className="h-8 w-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+              <Heart className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">ShaadiDesk</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              EventHub
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/venues" className="text-gray-700 hover:text-pink-600 transition-colors">
-              Venues
-            </Link>
-            <Link href="/packages" className="text-gray-700 hover:text-pink-600 transition-colors">
-              Packages
-            </Link>
-            <Link href="/about" className="text-gray-700 hover:text-pink-600 transition-colors">
-              About
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-6">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                {item.name}
+              </Link>
+            ))}
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-4">
             <Button variant="ghost" size="sm">
-              <Heart className="w-4 h-4 mr-2" />
-              Wishlist
+              <Search className="h-4 w-4" />
             </Button>
-            <Link href="/auth/login">
-              <Button variant="ghost" size="sm">
-                <User className="w-4 h-4 mr-2" />
+            <Button variant="ghost" size="sm">
+              <Heart className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/auth/login">
+                <User className="h-4 w-4 mr-2" />
                 Login
-              </Button>
-            </Link>
-            <Link href="/business/signup">
-              <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
-                List Your Business
-              </Button>
-            </Link>
+              </Link>
+            </Button>
+            <Button size="sm" asChild>
+              <Link href="/auth/signup-type">Sign Up</Link>
+            </Button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
-            <nav className="flex flex-col space-y-4">
-              <Link href="/venues" className="text-gray-700 hover:text-pink-600">
-                Venues
-              </Link>
-              <Link href="/packages" className="text-gray-700 hover:text-pink-600">
-                Packages
-              </Link>
-              <Link href="/about" className="text-gray-700 hover:text-pink-600">
-                About
-              </Link>
-              <div className="flex flex-col space-y-2 pt-4 border-t">
-                <Button variant="ghost" size="sm" className="justify-start">
-                  <Heart className="w-4 h-4 mr-2" />
-                  Wishlist
-                </Button>
-                <Link href="/auth/login">
-                  <Button variant="ghost" size="sm" className="justify-start w-full">
-                    <User className="w-4 h-4 mr-2" />
-                    Login
+          {/* Mobile Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="ghost" size="sm">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-80">
+              <div className="flex flex-col space-y-4 mt-8">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="text-lg font-medium transition-colors hover:text-primary"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <div className="border-t pt-4 space-y-2">
+                  <Button variant="ghost" className="w-full justify-start" asChild>
+                    <Link href="/auth/login" onClick={() => setIsOpen(false)}>
+                      <User className="h-4 w-4 mr-2" />
+                      Login
+                    </Link>
                   </Button>
-                </Link>
-                <Link href="/business/signup">
-                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
-                    List Your Business
+                  <Button className="w-full" asChild>
+                    <Link href="/auth/signup-type" onClick={() => setIsOpen(false)}>
+                      Sign Up
+                    </Link>
                   </Button>
-                </Link>
+                </div>
               </div>
-            </nav>
-          </div>
-        )}
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   )
