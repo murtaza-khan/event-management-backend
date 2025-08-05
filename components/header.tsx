@@ -8,7 +8,7 @@ import { Menu, X, User, Heart, LayoutDashboard, Briefcase } from "lucide-react"
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   // For demonstration, simulate user types. In a real app, this would come from auth.
-  const isAuthenticated = true
+  const isAuthenticated = false
   const isClient = false // Set this to true to see client dashboard, false for vendor
   const isVendor = true // Set this to true to see vendor dashboard, false for client
 
