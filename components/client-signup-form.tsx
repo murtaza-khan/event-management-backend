@@ -1,8 +1,7 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,55 +9,67 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { User, Calendar, Heart, Shield } from "lucide-react"
+import { User, Heart, Shield, Eye, EyeOff } from "lucide-react"
+import { FullscreenLoader } from "@/components/fullscreen-loader"
+import { toast } from "@/components/ui/use-toast"
 
 export function ClientSignupForm() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
-    // Personal Information
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
     password: "",
     confirmPassword: "",
-
-    // Event Information
-    eventType: "",
-    eventDate: "",
-    guestCount: "",
-    budget: "",
-    city: "",
-    area: "",
-
-    // Preferences
     interests: [] as string[],
     communicationPreference: "",
     specialRequirements: "",
-
-    // Terms
     agreeToTerms: false,
     agreeToMarketing: false,
     agreeToOffers: false,
   })
 
   const [currentStep, setCurrentStep] = useState(1)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleNext = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1)
+    if (currentStep === 1) {
+      if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+        toast({
+          variant: "destructive",
+          title: "Missing Information",
+          description: "Please fill in all required fields",
+        })
+        return
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        toast({
+          variant: "destructive",
+          title: "Password Mismatch",
+          description: "Passwords do not match",
+        })
+        return
+      }
+
+      if (formData.password.length < 8) {
+        toast({
+          variant: "destructive",
+          title: "Password Too Short",
+          description: "Password must be at least 8 characters",
+        })
+        return
+      }
     }
+    
+    setCurrentStep(currentStep + 1)
   }
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Client signup data:", formData)
-    // Handle form submission
+    setCurrentStep(currentStep - 1)
   }
 
   const handleInterestToggle = (interest: string) => {
@@ -68,6 +79,66 @@ export function ClientSignupForm() {
         ? formData.interests.filter((i) => i !== interest)
         : [...formData.interests, interest],
     })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!formData.agreeToTerms) {
+      toast({
+        variant: "destructive",
+        title: "Terms Not Accepted",
+        description: "You must agree to the terms and conditions",
+      })
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          interests: formData.interests,
+          communicationPreference: formData.communicationPreference,
+          agreeToTerms: formData.agreeToTerms,
+          agreeToMarketing: formData.agreeToMarketing,
+          agreeToOffers: formData.agreeToOffers,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Registration failed')
+      }
+
+      toast({
+        title: "Registration Successful!",
+        description: "Your account has been created successfully",
+      })
+
+      // Let the loader stay visible during navigation
+      router.push('/auth/login?registered=true')
+      // Don't set isSubmitting to false - let navigation handle it
+      
+    } catch (error) {
+      setIsSubmitting(false)
+      console.error('Registration error:', error)
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: error instanceof Error ? error.message : 'An error occurred during registration',
+      })
+    }
   }
 
   const interests = [
@@ -103,6 +174,7 @@ export function ClientSignupForm() {
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   placeholder="Enter your first name"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
               <div>
@@ -113,6 +185,7 @@ export function ClientSignupForm() {
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   placeholder="Enter your last name"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -126,6 +199,7 @@ export function ClientSignupForm() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="your.email@example.com"
                 required
+                disabled={isSubmitting}
               />
             </div>
 
@@ -138,151 +212,59 @@ export function ClientSignupForm() {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+92 300 1234567"
                 required
+                disabled={isSubmitting}
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="relative">
                 <Label htmlFor="password">Password *</Label>
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Create a strong password"
                   required
+                  className="pr-10"
+                  disabled={isSubmitting}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  disabled={isSubmitting}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
                 <p className="text-xs text-gray-500 mt-1">Minimum 8 characters with letters and numbers</p>
               </div>
-              <div>
+              <div className="relative">
                 <Label htmlFor="confirmPassword">Confirm Password *</Label>
                 <Input
                   id="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Confirm your password"
                   required
+                  className="pr-10"
+                  disabled={isSubmitting}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  disabled={isSubmitting}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
           </div>
         )
 
       case 2:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-6">
-              <Calendar className="w-12 h-12 text-pink-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold">Event Information</h3>
-              <p className="text-gray-600">Tell us about your upcoming event</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="eventType">Event Type *</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, eventType: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select event type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="wedding">Wedding</SelectItem>
-                    <SelectItem value="engagement">Engagement</SelectItem>
-                    <SelectItem value="mehndi">Mehndi</SelectItem>
-                    <SelectItem value="reception">Reception</SelectItem>
-                    <SelectItem value="birthday">Birthday Party</SelectItem>
-                    <SelectItem value="anniversary">Anniversary</SelectItem>
-                    <SelectItem value="corporate">Corporate Event</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="eventDate">Expected Event Date</Label>
-                <Input
-                  id="eventDate"
-                  type="date"
-                  value={formData.eventDate}
-                  onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="guestCount">Expected Guest Count</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, guestCount: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select guest count" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="50-100">50-100 guests</SelectItem>
-                    <SelectItem value="100-200">100-200 guests</SelectItem>
-                    <SelectItem value="200-500">200-500 guests</SelectItem>
-                    <SelectItem value="500-1000">500-1000 guests</SelectItem>
-                    <SelectItem value="1000+">1000+ guests</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="budget">Budget Range</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, budget: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select budget range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="under-5lac">Under ₹5 Lakh</SelectItem>
-                    <SelectItem value="5-10lac">₹5-10 Lakh</SelectItem>
-                    <SelectItem value="10-20lac">₹10-20 Lakh</SelectItem>
-                    <SelectItem value="20-50lac">₹20-50 Lakh</SelectItem>
-                    <SelectItem value="above-50lac">Above ₹50 Lakh</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="city">City *</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, city: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select city" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="lahore">Lahore</SelectItem>
-                    <SelectItem value="karachi">Karachi</SelectItem>
-                    <SelectItem value="islamabad">Islamabad</SelectItem>
-                    <SelectItem value="rawalpindi">Rawalpindi</SelectItem>
-                    <SelectItem value="faisalabad">Faisalabad</SelectItem>
-                    <SelectItem value="multan">Multan</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="area">Preferred Area</Label>
-                <Input
-                  id="area"
-                  value={formData.area}
-                  onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                  placeholder="e.g., DHA, Gulberg, Clifton"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="specialRequirements">Special Requirements</Label>
-              <Textarea
-                id="specialRequirements"
-                value={formData.specialRequirements}
-                onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
-                placeholder="Any specific requirements or preferences for your event..."
-                rows={3}
-              />
-            </div>
-          </div>
-        )
-
-      case 3:
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -300,6 +282,7 @@ export function ClientSignupForm() {
                       id={interest}
                       checked={formData.interests.includes(interest)}
                       onCheckedChange={() => handleInterestToggle(interest)}
+                      disabled={isSubmitting}
                     />
                     <Label htmlFor={interest} className="text-sm">
                       {interest}
@@ -311,7 +294,11 @@ export function ClientSignupForm() {
 
             <div>
               <Label htmlFor="communicationPreference">Preferred Communication Method</Label>
-              <Select onValueChange={(value) => setFormData({ ...formData, communicationPreference: value })}>
+              <Select 
+                onValueChange={(value) => setFormData({ ...formData, communicationPreference: value })}
+                value={formData.communicationPreference}
+                disabled={isSubmitting}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="How would you like us to contact you?" />
                 </SelectTrigger>
@@ -324,7 +311,18 @@ export function ClientSignupForm() {
               </Select>
             </div>
 
-            {/* Terms and Conditions */}
+            <div>
+              <Label htmlFor="specialRequirements">Special Requirements</Label>
+              <Textarea
+                id="specialRequirements"
+                value={formData.specialRequirements}
+                onChange={(e) => setFormData({ ...formData, specialRequirements: e.target.value })}
+                placeholder="Any specific requirements or preferences you have..."
+                rows={3}
+                disabled={isSubmitting}
+              />
+            </div>
+
             <div className="bg-gray-50 p-6 rounded-lg space-y-4">
               <h4 className="font-semibold text-gray-900 flex items-center">
                 <Shield className="w-5 h-5 mr-2" />
@@ -337,6 +335,8 @@ export function ClientSignupForm() {
                     id="terms"
                     checked={formData.agreeToTerms}
                     onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
+                    required
+                    disabled={isSubmitting}
                   />
                   <Label htmlFor="terms" className="text-sm leading-relaxed">
                     I agree to the{" "}
@@ -356,6 +356,7 @@ export function ClientSignupForm() {
                     id="marketing"
                     checked={formData.agreeToMarketing}
                     onCheckedChange={(checked) => setFormData({ ...formData, agreeToMarketing: checked as boolean })}
+                    disabled={isSubmitting}
                   />
                   <Label htmlFor="marketing" className="text-sm leading-relaxed">
                     I want to receive event planning tips, vendor recommendations, and platform updates via email
@@ -367,6 +368,7 @@ export function ClientSignupForm() {
                     id="offers"
                     checked={formData.agreeToOffers}
                     onCheckedChange={(checked) => setFormData({ ...formData, agreeToOffers: checked as boolean })}
+                    disabled={isSubmitting}
                   />
                   <Label htmlFor="offers" className="text-sm leading-relaxed">
                     I want to receive exclusive offers, discounts, and promotional deals from vendors
@@ -375,7 +377,6 @@ export function ClientSignupForm() {
               </div>
             </div>
 
-            {/* Account Benefits Preview */}
             <div className="bg-gradient-to-br from-pink-50 to-purple-50 p-6 rounded-lg border border-pink-200">
               <h4 className="font-semibold text-gray-900 mb-3">🎉 Your Account Benefits</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
@@ -414,43 +415,63 @@ export function ClientSignupForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Create Your Account</span>
-          <span className="text-sm font-normal text-gray-600">Step {currentStep} of 3</span>
-        </CardTitle>
+    <>
+      {isSubmitting && <FullscreenLoader />}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Create Your Account</span>
+            <span className="text-sm font-normal text-gray-600">Step {currentStep} of 2</span>
+          </CardTitle>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-pink-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 3) * 100}%` }}
-          ></div>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          {renderStep()}
-
-          <div className="flex justify-between mt-8 pt-6 border-t">
-            <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-              Previous
-            </Button>
-
-            {currentStep < 3 ? (
-              <Button type="button" onClick={handleNext} className="bg-pink-600 hover:bg-pink-700">
-                Next Step
-              </Button>
-            ) : (
-              <Button type="submit" className="bg-pink-600 hover:bg-pink-700" disabled={!formData.agreeToTerms}>
-                Create Account
-              </Button>
-            )}
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-pink-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(currentStep / 2) * 100}%` }}
+            ></div>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            {renderStep()}
+
+            <div className="flex justify-between mt-8 pt-6 border-t">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handlePrevious} 
+                disabled={currentStep === 1 || isSubmitting}
+              >
+                Previous
+              </Button>
+
+              {currentStep < 2 ? (
+                <Button 
+                  type="button" 
+                  onClick={handleNext} 
+                  className="bg-pink-600 hover:bg-pink-700"
+                  disabled={isSubmitting}
+                >
+                  Next Step
+                </Button>
+              ) : (
+                <Button 
+                  type="submit" 
+                  className="bg-pink-600 hover:bg-pink-700" 
+                  disabled={!formData.agreeToTerms || isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      Creating Account...
+                    </>
+                  ) : 'Create Account'}
+                </Button>
+              )}
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </>
   )
 }
