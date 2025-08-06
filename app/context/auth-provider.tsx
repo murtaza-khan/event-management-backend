@@ -1,4 +1,3 @@
-// app/context/auth-provider.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -94,6 +93,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("rememberMe", "true");
       }
 
+      // Show success toast
+      toast({
+        title: "Login Successful!",
+        description: `Welcome back, ${data.user.firstName}!`,
+      });
+
+      router.push("/");
+      
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       setAuthState({
         isAuthenticated: true,
         user: data.user,
@@ -101,14 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         error: null,
       });
 
-      // Show success toast
-      toast({
-        title: "Login Successful!",
-        description: `Welcome back, ${data.user.firstName}!`,
-      });
-
-      // Navigate to home page
-      router.push("/");
     } catch (error) {
       console.error("Login error:", error);
       setAuthState({
