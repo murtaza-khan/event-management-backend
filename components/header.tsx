@@ -1,83 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Menu, X, User, Heart, LayoutDashboard, Briefcase } from "lucide-react"
+import { useAuth } from "../app/context/auth-context"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [authState, setAuthState] = useState({
-    isAuthenticated: false,
-    isClient: false,
-    isVendor: false,
-    isLoading: true
-  })
   const router = useRouter()
+  const { isAuthenticated, user, isLoading, logout } = useAuth()
 
-  useEffect(() => {
-    // Check authentication status when component mounts
-    const checkAuth = () => {
-      const token = localStorage.getItem('authToken')
-      const userData = localStorage.getItem('user')
-      
-      if (token && userData) {
-        try {
-          const user = JSON.parse(userData)
-          setAuthState({
-            isAuthenticated: true,
-            isClient: user.role === 'client',
-            isVendor: user.role === 'vendor',
-            isLoading: false
-          })
-        } catch (error) {
-          console.error('Error parsing user data:', error)
-          setAuthState({
-            isAuthenticated: false,
-            isClient: false,
-            isVendor: false,
-            isLoading: false
-          })
-        }
-      } else {
-        setAuthState({
-          isAuthenticated: false,
-          isClient: false,
-          isVendor: false,
-          isLoading: false
-        })
-      }
-    }
-
-    checkAuth()
-
-    // Listen for storage changes (like when user logs in from another tab)
-    const handleStorageChange = () => checkAuth()
-    window.addEventListener('storage', handleStorageChange)
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-    }
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('user')
-    setAuthState({
-      isAuthenticated: false,
-      isClient: false,
-      isVendor: false,
-      isLoading: false
-    })
-    router.push('/')
-  }
-
-  if (authState.isLoading) {
+  if (isLoading) {
     return (
       <header className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          {/* Loading placeholder */}
           <div className="animate-pulse h-8 w-32 bg-gray-200 rounded"></div>
           <div className="animate-pulse h-8 w-24 bg-gray-200 rounded"></div>
         </div>
@@ -117,9 +55,9 @@ export function Header() {
               Wishlist
             </Button>
             
-            {authState.isAuthenticated ? (
+            {isAuthenticated ? (
               <>
-                {authState.isClient && (
+                {user?.isClient && (
                   <Link href="/dashboard">
                     <Button variant="ghost" size="sm">
                       <LayoutDashboard className="w-4 h-4 mr-2" />
@@ -127,37 +65,33 @@ export function Header() {
                     </Button>
                   </Link>
                 )}
-                {authState.isVendor && (
-                  <Link href="/vendor-dashboard">
-                    <Button variant="ghost" size="sm">
-                      <Briefcase className="w-4 h-4 mr-2" />
-                      Vendor Dashboard
-                    </Button>
-                  </Link>
+                {user?.isVendor && (
+                  <>
+                    <Link href="/vendor-dashboard">
+                      <Button variant="ghost" size="sm">
+                        <Briefcase className="w-4 h-4 mr-2" />
+                        Vendor Dashboard
+                      </Button>
+                    </Link>
+                    <Link href="/business/signup">
+                      <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
+                        List Your Business
+                      </Button>
+                    </Link>
+                  </>
                 )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleLogout}
-                >
+                <Button variant="ghost" size="sm" onClick={logout}>
                   <User className="w-4 h-4 mr-2" />
                   Logout
                 </Button>
               </>
             ) : (
-              <>
-                <Link href="/auth/login">
-                  <Button variant="ghost" size="sm">
-                    <User className="w-4 h-4 mr-2" />
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/business/signup">
-                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
-                    List Your Business
-                  </Button>
-                </Link>
-              </>
+              <Link href="/auth/login">
+                <Button variant="ghost" size="sm">
+                  <User className="w-4 h-4 mr-2" />
+                  Login
+                </Button>
+              </Link>
             )}
           </div>
 
@@ -198,10 +132,10 @@ export function Header() {
                   Wishlist
                 </Button>
                 
-                {authState.isAuthenticated ? (
+                {isAuthenticated ? (
                   <>
-                    {authState.isClient && (
-                      <Link 
+                    {user?.isClient && (
+                      <Link
                         href="/dashboard"
                         onClick={() => setIsMenuOpen(false)}
                       >
@@ -211,23 +145,33 @@ export function Header() {
                         </Button>
                       </Link>
                     )}
-                    {authState.isVendor && (
-                      <Link 
-                        href="/vendor-dashboard"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <Button variant="ghost" size="sm" className="justify-start w-full">
-                          <Briefcase className="w-4 h-4 mr-2" />
-                          Vendor Dashboard
-                        </Button>
-                      </Link>
+                    {user?.isVendor && (
+                      <>
+                        <Link
+                          href="/vendor-dashboard"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <Button variant="ghost" size="sm" className="justify-start w-full">
+                            <Briefcase className="w-4 h-4 mr-2" />
+                            Vendor Dashboard
+                          </Button>
+                        </Link>
+                        <Link
+                          href="/business/signup"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
+                            List Your Business
+                          </Button>
+                        </Link>
+                      </>
                     )}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="justify-start w-full"
                       onClick={() => {
-                        handleLogout()
+                        logout()
                         setIsMenuOpen(false)
                       }}
                     >
@@ -236,25 +180,15 @@ export function Header() {
                     </Button>
                   </>
                 ) : (
-                  <>
-                    <Link 
-                      href="/auth/login"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Button variant="ghost" size="sm" className="justify-start w-full">
-                        <User className="w-4 h-4 mr-2" />
-                        Login
-                      </Button>
-                    </Link>
-                    <Link 
-                      href="/business/signup"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
-                        List Your Business
-                      </Button>
-                    </Link>
-                  </>
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Button variant="ghost" size="sm" className="justify-start w-full">
+                      <User className="w-4 h-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
                 )}
               </div>
             </nav>

@@ -1,20 +1,33 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
-import { mockBookedEvents } from "@/lib/mock-data"
-import { Calendar, Users, DollarSign, CheckCircle } from "lucide-react"
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
+// app/dashboard/page.tsx
+"use client";
 
-export default function ClientDashboardOverview() {
-  const upcomingEvents = mockBookedEvents.filter((event) => event.status === "upcoming")
-  const completedEvents = mockBookedEvents.filter((event) => event.status === "completed")
-  const totalGuests = mockBookedEvents.reduce((sum, event) => sum + event.guests, 0)
-  const totalSpend = mockBookedEvents.reduce((sum, event) => sum + event.totalCost, 0)
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { mockBookedEvents } from "@/lib/mock-data";
+import { Calendar, Users, DollarSign, CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { withClientAuth } from "../hoc/with-client-auth";
+import { useAuth } from "../context/auth-context";
+
+function ClientDashboardOverview() {
+  const { user } = useAuth();
+  const upcomingEvents = mockBookedEvents.filter((event) => event.status === "upcoming");
+  const completedEvents = mockBookedEvents.filter((event) => event.status === "completed");
+  const totalGuests = mockBookedEvents.reduce((sum, event) => sum + event.guests, 0);
+  const totalSpend = mockBookedEvents.reduce((sum, event) => sum + event.totalCost, 0);
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-800">Dashboard Overview</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold text-gray-800">Dashboard Overview</h2>
+        {user && (
+          <div className="text-lg font-medium">
+            Welcome back, {user.firstName}!
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
@@ -146,5 +159,7 @@ export default function ClientDashboardOverview() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
+
+export default withClientAuth(ClientDashboardOverview);

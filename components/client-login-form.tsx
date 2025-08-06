@@ -1,3 +1,4 @@
+// components/client-login-form.tsx
 "use client";
 
 import { useState } from "react";
@@ -11,16 +12,17 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { FullscreenLoader } from "@/components/fullscreen-loader";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "../app/context/auth-context";
 
 export function ClientLoginForm() {
   const router = useRouter();
+  const { login, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,59 +37,17 @@ export function ClientLoginForm() {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || data.error || "Login failed");
-      }
-
-      // Store authentication data
-      localStorage.setItem("authToken", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      if (formData.rememberMe) {
-        localStorage.setItem("rememberMe", "true");
-      }
-
-      // Show success toast
-      toast({
-        title: "Login Successful!",
-        description: `Welcome back, ${data.user.firstName}!`,
-      });
-
-      // Navigate to home page - loader will disappear during unmount
-      router.push("/");
+      await login(formData.email, formData.password, formData.rememberMe);
     } catch (error) {
-      setIsSubmitting(false);
+      // Error handling is already done in the auth provider
       console.error("Login error:", error);
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description:
-          error instanceof Error
-            ? error.message
-            : "An error occurred during login",
-      });
     }
   };
 
   return (
     <>
-      {isSubmitting && <FullscreenLoader />}
+      {isLoading && <FullscreenLoader />}
 
       <Card>
         <CardHeader>
@@ -110,7 +70,7 @@ export function ClientLoginForm() {
                   placeholder="your.email@example.com"
                   className="pl-10"
                   required
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -129,13 +89,13 @@ export function ClientLoginForm() {
                   placeholder="Enter your password"
                   className="pl-10 pr-10"
                   required
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -154,7 +114,7 @@ export function ClientLoginForm() {
                   onCheckedChange={(checked) =>
                     setFormData({ ...formData, rememberMe: checked as boolean })
                   }
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                 />
                 <Label htmlFor="rememberMe" className="text-sm">
                   Remember me
@@ -163,7 +123,7 @@ export function ClientLoginForm() {
               <Link
                 href="/auth/forgot-password"
                 className="text-sm text-pink-600 hover:text-pink-700"
-                onClick={(e) => isSubmitting && e.preventDefault()}
+                onClick={(e) => isLoading && e.preventDefault()}
               >
                 Forgot password?
               </Link>
@@ -172,9 +132,9 @@ export function ClientLoginForm() {
             <Button
               type="submit"
               className="w-full bg-pink-600 hover:bg-pink-700"
-              disabled={isSubmitting}
+              disabled={isLoading}
             >
-              {isSubmitting ? <>Signing In...</> : "Sign In"}
+              {isLoading ? <>Signing In...</> : "Sign In"}
             </Button>
 
             <div className="relative">
@@ -193,7 +153,7 @@ export function ClientLoginForm() {
                 variant="outline"
                 type="button"
                 className="bg-transparent"
-                disabled={isSubmitting}
+                disabled={isLoading}
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                   <path
@@ -219,7 +179,7 @@ export function ClientLoginForm() {
                 variant="outline"
                 type="button"
                 className="bg-transparent"
-                disabled={isSubmitting}
+                disabled={isLoading}
               >
                 <svg
                   className="mr-2 h-4 w-4"

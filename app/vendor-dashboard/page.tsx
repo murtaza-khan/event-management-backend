@@ -1,22 +1,35 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
-import { mockVendorBookings, mockVendorServices } from "@/lib/mock-data"
-import { Calendar, DollarSign, Star } from "lucide-react"
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
+// app/vendor-dashboard/page.tsx
+"use client";
 
-export default function VendorDashboardOverview() {
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { mockVendorBookings, mockVendorServices } from "@/lib/mock-data";
+import { Calendar, DollarSign, Star } from "lucide-react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { withVendorAuth } from "../hoc/with-vendor-auth";
+import { useAuth } from "../context/auth-context";
+
+function VendorDashboardOverview() {
+  const { user } = useAuth();
   const upcomingBookings = mockVendorBookings.filter(
     (booking) => booking.status === "pending" || booking.status === "confirmed",
-  )
-  const totalEarnings = mockVendorBookings.reduce((sum, booking) => sum + booking.amount, 0)
+  );
+  const totalEarnings = mockVendorBookings.reduce((sum, booking) => sum + booking.amount, 0);
   const averageRating =
-    mockVendorServices.reduce((sum, service) => sum + service.rating, 0) / mockVendorServices.length || 0
+    mockVendorServices.reduce((sum, service) => sum + service.rating, 0) / mockVendorServices.length || 0;
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-800">Dashboard Overview</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold text-gray-800">Dashboard Overview</h2>
+        {user && (
+          <div className="text-lg font-medium">
+            Welcome back, {user.firstName}!
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
@@ -176,5 +189,7 @@ export default function VendorDashboardOverview() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
+
+export default withVendorAuth(VendorDashboardOverview);
