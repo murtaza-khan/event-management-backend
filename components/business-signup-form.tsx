@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -30,92 +29,168 @@ interface CustomPackage {
   isPopular: boolean
 }
 
+interface FormDataState {
+  // Authentication fields
+  email: string;
+  password: string;
+  confirmPassword: string;
+  
+  // Business Information
+  businessName: string;
+  businessType: string;
+  category: string;
+  description: string;
+  establishedYear: string | null;
+
+  // Contact Information
+  ownerName: string;
+  phone: string;
+  whatsapp: string | null;
+  website: string | null;
+
+  // Location
+  address: string;
+  city: string;
+  area: string | null;
+
+  // Services & Pricing
+  services: string;
+
+  // Dynamic pricing fields
+  perHeadPrice: string | null;
+  venueRental: string | null;
+  minGuests: string | null;
+  maxGuests: string | null;
+  decorationCharges: string | null;
+  parkingCapacity: string | null;
+  bridalPackage: string | null;
+  partyMakeup: string | null;
+  engagementPackage: string | null;
+  mehndiBridal: string | null;
+  trialMakeup: string | null;
+  airbrushMakeup: string | null;
+  weddingPackage: string | null;
+  preWeddingShoot: string | null;
+  engagementCoverage: string | null;
+  mehndiBarat: string | null;
+  cinematography: string | null;
+  albumPrinting: string | null;
+  perPlateBasic: string | null;
+  perPlatePremium: string | null;
+  perPlateLuxury: string | null;
+  liveCounters: string | null;
+  dessertStation: string | null;
+  serviceCharges: string | null;
+  stageDecoration: string | null;
+  hallDecoration: string | null;
+  flowerDecoration: string | null;
+  lightingPackage: string | null;
+  backdropRental: string | null;
+  djServices: string | null;
+  liveMusic: string | null;
+  soundSystem: string | null;
+  lightingEffects: string | null;
+  equipmentRental: string | null;
+  basicPackage: string | null;
+  premiumPackage: string | null;
+  luxuryPackage: string | null;
+  customization: string | null;
+
+  // Offers & Terms
+  earlyBirdDiscount: string | null;
+  seasonalOffer: string | null;
+  packageDeal: string | null;
+  minimumBooking: string | null;
+  advancePayment: string | null;
+  cancellationPolicy: string;
+
+  // Documents & Media
+  businessLicense: any;
+  portfolio: any[];
+
+  // Terms
+  agreeToTerms: boolean;
+  agreeToMarketing: boolean;
+}
+
 export function BusinessSignupForm() {
   const [currentStep, setCurrentStep] = useState(1)
   const [customPackages, setCustomPackages] = useState<CustomPackage[]>([])
   const [showCustomPackageForm, setShowCustomPackageForm] = useState(false)
-  const [formData, setFormData] = useState({
+  
+  const [formData, setFormData] = useState<FormDataState>({
+    // Authentication fields
+    email: "",
+    password: "",
+    confirmPassword: "",
+    
     // Business Information
     businessName: "",
     businessType: "",
     category: "",
     description: "",
-    establishedYear: "",
+    establishedYear: null,
 
     // Contact Information
     ownerName: "",
-    email: "",
     phone: "",
-    whatsapp: "",
-    website: "",
+    whatsapp: null,
+    website: null,
 
     // Location
     address: "",
     city: "",
-    area: "",
+    area: null,
 
     // Services & Pricing
     services: "",
 
-    // Dynamic pricing fields (will be populated based on category)
-    // Venue fields
-    perHeadPrice: "",
-    venueRental: "",
-    minGuests: "",
-    maxGuests: "",
-    decorationCharges: "",
-    parkingCapacity: "",
-
-    // Makeup fields
-    bridalPackage: "",
-    partyMakeup: "",
-    engagementPackage: "",
-    mehndiBridal: "",
-    trialMakeup: "",
-    airbrushMakeup: "",
-
-    // Photography fields
-    weddingPackage: "",
-    preWeddingShoot: "",
-    engagementCoverage: "",
-    mehndiBarat: "",
-    cinematography: "",
-    albumPrinting: "",
-
-    // Catering fields
-    perPlateBasic: "",
-    perPlatePremium: "",
-    perPlateLuxury: "",
-    liveCounters: "",
-    dessertStation: "",
-    serviceCharges: "",
-
-    // Decoration fields
-    stageDecoration: "",
-    hallDecoration: "",
-    flowerDecoration: "",
-    lightingPackage: "",
-    backdropRental: "",
-
-    // Music fields
-    djServices: "",
-    liveMusic: "",
-    soundSystem: "",
-    lightingEffects: "",
-    equipmentRental: "",
-
-    // General fields
-    basicPackage: "",
-    premiumPackage: "",
-    luxuryPackage: "",
-    customization: "",
+    // Dynamic pricing fields
+    perHeadPrice: null,
+    venueRental: null,
+    minGuests: null,
+    maxGuests: null,
+    decorationCharges: null,
+    parkingCapacity: null,
+    bridalPackage: null,
+    partyMakeup: null,
+    engagementPackage: null,
+    mehndiBridal: null,
+    trialMakeup: null,
+    airbrushMakeup: null,
+    weddingPackage: null,
+    preWeddingShoot: null,
+    engagementCoverage: null,
+    mehndiBarat: null,
+    cinematography: null,
+    albumPrinting: null,
+    perPlateBasic: null,
+    perPlatePremium: null,
+    perPlateLuxury: null,
+    liveCounters: null,
+    dessertStation: null,
+    serviceCharges: null,
+    stageDecoration: null,
+    hallDecoration: null,
+    flowerDecoration: null,
+    lightingPackage: null,
+    backdropRental: null,
+    djServices: null,
+    liveMusic: null,
+    soundSystem: null,
+    lightingEffects: null,
+    equipmentRental: null,
+    basicPackage: null,
+    premiumPackage: null,
+    luxuryPackage: null,
+    customization: null,
 
     // Offers & Terms
-    earlyBirdDiscount: "",
-    seasonalOffer: "",
-    packageDeal: "",
-    minimumBooking: "",
-    advancePayment: "",
+    earlyBirdDiscount: null,
+    seasonalOffer: null,
+    packageDeal: null,
+    minimumBooking: null,
+    advancePayment: null,
     cancellationPolicy: "",
 
     // Documents & Media
@@ -157,14 +232,87 @@ export function BusinessSignupForm() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const finalData = {
-      ...formData,
-      customPackages: customPackages,
+  const preparePayload = (formData: FormDataState) => {
+    // Remove pricing and offer fields from top level
+    const { confirmPassword, ...rest } = formData;
+    const payload = { ...rest };
+    
+    // Add custom packages if any
+    if (customPackages.length > 0) {
+      payload.customPackages = customPackages;
     }
-    console.log("Form submitted:", finalData)
-    // Handle form submission
+
+    return payload;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match")
+      return
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert("Please enter a valid email address")
+      return;
+    }
+    
+    // Validate password strength
+    if (formData.password.length < 8) {
+      alert("Password must be at least 8 characters long")
+      return;
+    }
+    
+    // Validate required fields
+    const requiredFields = [
+      'businessName', 'businessType', 'category', 'description',
+      'ownerName', 'phone', 'address', 'city', 'services'
+    ] as (keyof FormDataState)[];
+    
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    if (missingFields.length > 0) {
+      alert(`Missing required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+    
+    // Validate terms agreement
+    if (!formData.agreeToTerms) {
+      alert("You must agree to the terms and conditions")
+      return
+    }
+    
+    // Prepare payload
+    const payload = preparePayload(formData);
+
+    try {
+      const response = await fetch('/api/auth/register/vendor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Registration failed')
+      }
+
+      const data = await response.json()
+      console.log('Registration successful:', data)
+      // Redirect or show success message
+    } catch (error) {
+      console.error('Registration error:', error)
+      if (error instanceof Error) {
+        alert(`Registration failed: ${error.message}`)
+      } else {
+        alert("Registration failed: An unknown error occurred")
+      }
+    }
   }
 
   // Custom Package Functions
@@ -469,18 +617,18 @@ export function BusinessSignupForm() {
         return {
           title: "Venue Pricing & Capacity",
           fields: [
-            { key: "perHeadPrice", label: "Price per Head", type: "number", placeholder: "₹1,200", required: true },
+            { key: "perHeadPrice", label: "Price per Head", type: "number", placeholder: "₹1,200", required: false },
             {
               key: "venueRental",
               label: "Venue Rental (Base)",
               type: "number",
               placeholder: "₹50,000",
-              required: true,
+              required: false,
             },
-            { key: "minGuests", label: "Minimum Guests", type: "number", placeholder: "100", required: true },
-            { key: "maxGuests", label: "Maximum Guests", type: "number", placeholder: "1000", required: true },
-            { key: "decorationCharges", label: "Decoration Charges", type: "number", placeholder: "₹25,000" },
-            { key: "parkingCapacity", label: "Parking Capacity", type: "number", placeholder: "200 cars" },
+            { key: "minGuests", label: "Minimum Guests", type: "number", placeholder: "100", required: false },
+            { key: "maxGuests", label: "Maximum Guests", type: "number", placeholder: "1000", required: false },
+            { key: "decorationCharges", label: "Decoration Charges", type: "number", placeholder: "₹25,000", required: false },
+            { key: "parkingCapacity", label: "Parking Capacity", type: "number", placeholder: "200 cars", required: false },
           ],
         }
       case "makeup":
@@ -492,13 +640,13 @@ export function BusinessSignupForm() {
               label: "Bridal Makeup Package",
               type: "number",
               placeholder: "₹25,000",
-              required: true,
+              required: false,
             },
-            { key: "partyMakeup", label: "Party Makeup", type: "number", placeholder: "₹8,000" },
-            { key: "engagementPackage", label: "Engagement Package", type: "number", placeholder: "₹15,000" },
-            { key: "mehndiBridal", label: "Mehndi Bridal", type: "number", placeholder: "₹12,000" },
-            { key: "trialMakeup", label: "Trial Makeup", type: "number", placeholder: "₹3,000" },
-            { key: "airbrushMakeup", label: "Airbrush Makeup (Additional)", type: "number", placeholder: "₹5,000" },
+            { key: "partyMakeup", label: "Party Makeup", type: "number", placeholder: "₹8,000", required: false },
+            { key: "engagementPackage", label: "Engagement Package", type: "number", placeholder: "₹15,000", required: false },
+            { key: "mehndiBridal", label: "Mehndi Bridal", type: "number", placeholder: "₹12,000", required: false },
+            { key: "trialMakeup", label: "Trial Makeup", type: "number", placeholder: "₹3,000", required: false },
+            { key: "airbrushMakeup", label: "Airbrush Makeup (Additional)", type: "number", placeholder: "₹5,000", required: false },
           ],
         }
       case "photography":
@@ -510,13 +658,13 @@ export function BusinessSignupForm() {
               label: "Complete Wedding Package",
               type: "number",
               placeholder: "₹80,000",
-              required: true,
+              required: false,
             },
-            { key: "preWeddingShoot", label: "Pre-Wedding Shoot", type: "number", placeholder: "₹25,000" },
-            { key: "engagementCoverage", label: "Engagement Coverage", type: "number", placeholder: "₹35,000" },
-            { key: "mehndiBarat", label: "Mehndi/Barat Coverage", type: "number", placeholder: "₹45,000" },
-            { key: "cinematography", label: "Cinematography (Additional)", type: "number", placeholder: "₹30,000" },
-            { key: "albumPrinting", label: "Album Printing", type: "number", placeholder: "₹15,000" },
+            { key: "preWeddingShoot", label: "Pre-Wedding Shoot", type: "number", placeholder: "₹25,000", required: false },
+            { key: "engagementCoverage", label: "Engagement Coverage", type: "number", placeholder: "₹35,000", required: false },
+            { key: "mehndiBarat", label: "Mehndi/Barat Coverage", type: "number", placeholder: "₹45,000", required: false },
+            { key: "cinematography", label: "Cinematography (Additional)", type: "number", placeholder: "₹30,000", required: false },
+            { key: "albumPrinting", label: "Album Printing", type: "number", placeholder: "₹15,000", required: false },
           ],
         }
       case "catering":
@@ -528,13 +676,13 @@ export function BusinessSignupForm() {
               label: "Basic Menu (per plate)",
               type: "number",
               placeholder: "₹800",
-              required: true,
+              required: false,
             },
-            { key: "perPlatePremium", label: "Premium Menu (per plate)", type: "number", placeholder: "₹1,500" },
-            { key: "perPlateLuxury", label: "Luxury Menu (per plate)", type: "number", placeholder: "₹2,500" },
-            { key: "liveCounters", label: "Live Counters (per counter)", type: "number", placeholder: "₹8,000" },
-            { key: "dessertStation", label: "Dessert Station", type: "number", placeholder: "₹12,000" },
-            { key: "serviceCharges", label: "Service Charges (%)", type: "number", placeholder: "15" },
+            { key: "perPlatePremium", label: "Premium Menu (per plate)", type: "number", placeholder: "₹1,500", required: false },
+            { key: "perPlateLuxury", label: "Luxury Menu (per plate)", type: "number", placeholder: "₹2,500", required: false },
+            { key: "liveCounters", label: "Live Counters (per counter)", type: "number", placeholder: "₹8,000", required: false },
+            { key: "dessertStation", label: "Dessert Station", type: "number", placeholder: "₹12,000", required: false },
+            { key: "serviceCharges", label: "Service Charges (%)", type: "number", placeholder: "15", required: false },
           ],
         }
       case "decoration":
@@ -546,13 +694,12 @@ export function BusinessSignupForm() {
               label: "Stage Decoration",
               type: "number",
               placeholder: "₹35,000",
-              required: true,
+              required: false,
             },
-            { key: "hallDecoration", label: "Complete Hall Decoration", type: "number", placeholder: "₹80,000" },
-            { key: "mehndiBarat", label: "Mehndi/Barat Setup", type: "number", placeholder: "₹45,000" },
-            { key: "flowerDecoration", label: "Fresh Flower Decoration", type: "number", placeholder: "₹25,000" },
-            { key: "lightingPackage", label: "Lighting Package", type: "number", placeholder: "₹20,000" },
-            { key: "backdropRental", label: "Backdrop Rental", type: "number", placeholder: "₹8,000" },
+            { key: "hallDecoration", label: "Complete Hall Decoration", type: "number", placeholder: "₹80,000", required: false },
+            { key: "flowerDecoration", label: "Fresh Flower Decoration", type: "number", placeholder: "₹25,000", required: false },
+            { key: "lightingPackage", label: "Lighting Package", type: "number", placeholder: "₹20,000", required: false },
+            { key: "backdropRental", label: "Backdrop Rental", type: "number", placeholder: "₹8,000", required: false },
           ],
         }
       case "music":
@@ -564,23 +711,22 @@ export function BusinessSignupForm() {
               label: "DJ Services (per event)",
               type: "number",
               placeholder: "₹25,000",
-              required: true,
+              required: false,
             },
-            { key: "liveMusic", label: "Live Music Band", type: "number", placeholder: "₹50,000" },
-            { key: "soundSystem", label: "Sound System Rental", type: "number", placeholder: "₹15,000" },
-            { key: "lightingEffects", label: "Lighting Effects", type: "number", placeholder: "₹20,000" },
-            { key: "mehndiBarat", label: "Mehndi/Barat Entertainment", type: "number", placeholder: "₹35,000" },
-            { key: "equipmentRental", label: "Equipment Rental (per day)", type: "number", placeholder: "₹8,000" },
+            { key: "liveMusic", label: "Live Music Band", type: "number", placeholder: "₹50,000", required: false },
+            { key: "soundSystem", label: "Sound System Rental", type: "number", placeholder: "₹15,000", required: false },
+            { key: "lightingEffects", label: "Lighting Effects", type: "number", placeholder: "₹20,000", required: false },
+            { key: "equipmentRental", label: "Equipment Rental (per day)", type: "number", placeholder: "₹8,000", required: false },
           ],
         }
       default:
         return {
           title: "Service Pricing",
           fields: [
-            { key: "basicPackage", label: "Basic Package", type: "number", placeholder: "₹15,000", required: true },
-            { key: "premiumPackage", label: "Premium Package", type: "number", placeholder: "₹35,000" },
-            { key: "luxuryPackage", label: "Luxury Package", type: "number", placeholder: "₹60,000" },
-            { key: "customization", label: "Customization Charges", type: "number", placeholder: "₹5,000" },
+            { key: "basicPackage", label: "Basic Package", type: "number", placeholder: "₹15,000", required: false },
+            { key: "premiumPackage", label: "Premium Package", type: "number", placeholder: "₹35,000", required: false },
+            { key: "luxuryPackage", label: "Luxury Package", type: "number", placeholder: "₹60,000", required: false },
+            { key: "customization", label: "Customization Charges", type: "number", placeholder: "₹5,000", required: false },
           ],
         }
     }
@@ -610,7 +756,10 @@ export function BusinessSignupForm() {
               </div>
               <div>
                 <Label htmlFor="businessType">Business Type *</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, businessType: value })}>
+                <Select 
+                  onValueChange={(value) => setFormData({ ...formData, businessType: value })}
+                  required
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select business type" />
                   </SelectTrigger>
@@ -627,7 +776,10 @@ export function BusinessSignupForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="category">Category *</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <Select 
+                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  required
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your category" />
                   </SelectTrigger>
@@ -650,8 +802,11 @@ export function BusinessSignupForm() {
                   type="number"
                   min="1950"
                   max="2024"
-                  value={formData.establishedYear}
-                  onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value })}
+                  value={formData.establishedYear || ""}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    establishedYear: e.target.value || null 
+                  })}
                   placeholder="e.g., 2015"
                 />
               </div>
@@ -722,8 +877,11 @@ export function BusinessSignupForm() {
                 <Input
                   id="whatsapp"
                   type="tel"
-                  value={formData.whatsapp}
-                  onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                  value={formData.whatsapp || ""}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    whatsapp: e.target.value || null 
+                  })}
                   placeholder="+92 300 1234567"
                 />
               </div>
@@ -732,9 +890,38 @@ export function BusinessSignupForm() {
                 <Input
                   id="website"
                   type="url"
-                  value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  value={formData.website || ""}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    website: e.target.value || null 
+                  })}
                   placeholder="https://www.yourbusiness.com"
+                />
+              </div>
+            </div>
+            
+            {/* Password Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="password">Password *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Create a password (min 8 characters)"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  placeholder="Confirm your password"
+                  required
                 />
               </div>
             </div>
@@ -768,7 +955,10 @@ export function BusinessSignupForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="city">City *</Label>
-                <Select onValueChange={(value) => setFormData({ ...formData, city: value })}>
+                <Select 
+                  onValueChange={(value) => setFormData({ ...formData, city: value })}
+                  required
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select city" />
                   </SelectTrigger>
@@ -786,8 +976,11 @@ export function BusinessSignupForm() {
                 <Label htmlFor="area">Area/Locality</Label>
                 <Input
                   id="area"
-                  value={formData.area}
-                  onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                  value={formData.area || ""}
+                  onChange={(e) => setFormData({ 
+                    ...formData, 
+                    area: e.target.value || null 
+                  })}
                   placeholder="e.g., DHA Phase 5, Gulberg"
                 />
               </div>
@@ -818,8 +1011,11 @@ export function BusinessSignupForm() {
                       <Input
                         id={field.key}
                         type={field.type}
-                        value={formData[field.key] || ""}
-                        onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+                        value={formData[field.key as keyof FormDataState] || ""}
+                        onChange={(e) => setFormData({ 
+                          ...formData, 
+                          [field.key]: e.target.value || null 
+                        })}
                         placeholder={field.placeholder}
                         required={field.required}
                       />
@@ -1104,7 +1300,7 @@ export function BusinessSignupForm() {
                       <Checkbox
                         id="isPopular"
                         checked={newPackage.isPopular}
-                        onCheckedChange={(checked) => setNewPackage({ ...newPackage, isPopular: checked as boolean })}
+                        onCheckedChange={(checked) => setNewPackage({ ...newPackage, isPopular: !!checked })}
                       />
                       <Label htmlFor="isPopular" className="text-sm">
                         Mark as "Popular" package (will be highlighted to customers)
@@ -1137,7 +1333,10 @@ export function BusinessSignupForm() {
                     id="earlyBirdDiscount"
                     type="number"
                     value={formData.earlyBirdDiscount || ""}
-                    onChange={(e) => setFormData({ ...formData, earlyBirdDiscount: e.target.value })}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      earlyBirdDiscount: e.target.value || null 
+                    })}
                     placeholder="e.g., 15% for bookings 3 months in advance"
                   />
                 </div>
@@ -1146,7 +1345,10 @@ export function BusinessSignupForm() {
                   <Input
                     id="seasonalOffer"
                     value={formData.seasonalOffer || ""}
-                    onChange={(e) => setFormData({ ...formData, seasonalOffer: e.target.value })}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      seasonalOffer: e.target.value || null 
+                    })}
                     placeholder="e.g., 20% off during summer season"
                   />
                 </div>
@@ -1155,7 +1357,10 @@ export function BusinessSignupForm() {
                   <Input
                     id="packageDeal"
                     value={formData.packageDeal || ""}
-                    onChange={(e) => setFormData({ ...formData, packageDeal: e.target.value })}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      packageDeal: e.target.value || null 
+                    })}
                     placeholder="e.g., Book 3 services get 10% off total"
                   />
                 </div>
@@ -1165,7 +1370,10 @@ export function BusinessSignupForm() {
                     id="minimumBooking"
                     type="number"
                     value={formData.minimumBooking || ""}
-                    onChange={(e) => setFormData({ ...formData, minimumBooking: e.target.value })}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      minimumBooking: e.target.value || null 
+                    })}
                     placeholder="₹10,000"
                   />
                 </div>
@@ -1182,7 +1390,10 @@ export function BusinessSignupForm() {
                     id="advancePayment"
                     type="number"
                     value={formData.advancePayment || ""}
-                    onChange={(e) => setFormData({ ...formData, advancePayment: e.target.value })}
+                    onChange={(e) => setFormData({ 
+                      ...formData, 
+                      advancePayment: e.target.value || null 
+                    })}
                     placeholder="50"
                   />
                 </div>
@@ -1281,7 +1492,10 @@ export function BusinessSignupForm() {
                 <Checkbox
                   id="terms"
                   checked={formData.agreeToTerms}
-                  onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
+                  onCheckedChange={(checked) => setFormData({ 
+                    ...formData, 
+                    agreeToTerms: !!checked 
+                  })}
                 />
                 <Label htmlFor="terms" className="text-sm leading-relaxed">
                   I agree to the{" "}
@@ -1299,7 +1513,10 @@ export function BusinessSignupForm() {
                 <Checkbox
                   id="marketing"
                   checked={formData.agreeToMarketing}
-                  onCheckedChange={(checked) => setFormData({ ...formData, agreeToMarketing: checked as boolean })}
+                  onCheckedChange={(checked) => setFormData({ 
+                    ...formData, 
+                    agreeToMarketing: !!checked 
+                  })}
                 />
                 <Label htmlFor="marketing" className="text-sm leading-relaxed">
                   I agree to receive marketing communications and business tips from ShaadiDesk
