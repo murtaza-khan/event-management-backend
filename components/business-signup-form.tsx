@@ -10,16 +10,21 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, Building2, User, MapPin, Camera, Plus, Trash2, Package, Star } from "lucide-react"
+import { Upload, Building2, User, MapPin, Camera, Plus, Trash2, Package, Star, IndianRupee } from "lucide-react"
+
+interface PriceTier {
+  id: string
+  price: string
+  description: string
+  includes: string[]
+}
 
 interface CustomPackage {
   id: string
   name: string
   description: string
-  price: string
+  priceTiers: PriceTier[]
   duration: string
-  includes: string[]
-  excludes: string[]
   validityPeriod: string
   maxBookings: string
   isPopular: boolean
@@ -126,10 +131,15 @@ export function BusinessSignupForm() {
     id: "",
     name: "",
     description: "",
-    price: "",
+    priceTiers: [
+      {
+        id: Date.now().toString(),
+        price: "",
+        description: "",
+        includes: [""],
+      },
+    ],
     duration: "",
-    includes: [""],
-    excludes: [""],
     validityPeriod: "",
     maxBookings: "",
     isPopular: false,
@@ -159,22 +169,29 @@ export function BusinessSignupForm() {
 
   // Custom Package Functions
   const addCustomPackage = () => {
-    if (newPackage.name && newPackage.price) {
+    if (newPackage.name && newPackage.priceTiers.every(tier => tier.price && tier.includes.some(inc => inc.trim() !== ""))) {
       const packageWithId = {
         ...newPackage,
         id: Date.now().toString(),
-        includes: newPackage.includes.filter((item) => item.trim() !== ""),
-        excludes: newPackage.excludes.filter((item) => item.trim() !== ""),
+        priceTiers: newPackage.priceTiers.map(tier => ({
+          ...tier,
+          includes: tier.includes.filter((item) => item.trim() !== ""),
+        })),
       }
       setCustomPackages([...customPackages, packageWithId])
       setNewPackage({
         id: "",
         name: "",
         description: "",
-        price: "",
+        priceTiers: [
+          {
+            id: Date.now().toString(),
+            price: "",
+            description: "",
+            includes: [""],
+          },
+        ],
         duration: "",
-        includes: [""],
-        excludes: [""],
         validityPeriod: "",
         maxBookings: "",
         isPopular: false,
@@ -187,43 +204,79 @@ export function BusinessSignupForm() {
     setCustomPackages(customPackages.filter((pkg) => pkg.id !== id))
   }
 
-  const addIncludeItem = () => {
+  // Price Tier Functions
+  const addPriceTier = () => {
     setNewPackage({
       ...newPackage,
-      includes: [...newPackage.includes, ""],
+      priceTiers: [
+        ...newPackage.priceTiers,
+        {
+          id: Date.now().toString(),
+          price: "",
+          description: "",
+          includes: [""],
+        },
+      ],
     })
   }
 
-  const addExcludeItem = () => {
+  const removePriceTier = (tierId: string) => {
+    if (newPackage.priceTiers.length > 1) {
+      setNewPackage({
+        ...newPackage,
+        priceTiers: newPackage.priceTiers.filter((tier) => tier.id !== tierId),
+      })
+    }
+  }
+
+  const updatePriceTier = (tierId: string, field: keyof PriceTier, value: string) => {
     setNewPackage({
       ...newPackage,
-      excludes: [...newPackage.excludes, ""],
+      priceTiers: newPackage.priceTiers.map((tier) =>
+        tier.id === tierId ? { ...tier, [field]: value } : tier
+      ),
     })
   }
 
-  const updateIncludeItem = (index: number, value: string) => {
-    const updatedIncludes = [...newPackage.includes]
-    updatedIncludes[index] = value
-    setNewPackage({ ...newPackage, includes: updatedIncludes })
-  }
-
-  const updateExcludeItem = (index: number, value: string) => {
-    const updatedExcludes = [...newPackage.excludes]
-    updatedExcludes[index] = value
-    setNewPackage({ ...newPackage, excludes: updatedExcludes })
-  }
-
-  const removeIncludeItem = (index: number) => {
+  // Include/Exclude Functions
+  const addIncludeItem = (tierId: string) => {
     setNewPackage({
       ...newPackage,
-      includes: newPackage.includes.filter((_, i) => i !== index),
+      priceTiers: newPackage.priceTiers.map((tier) =>
+        tier.id === tierId
+          ? { ...tier, includes: [...tier.includes, ""] }
+          : tier
+      ),
     })
   }
 
-  const removeExcludeItem = (index: number) => {
+  const updateIncludeItem = (tierId: string, index: number, value: string) => {
     setNewPackage({
       ...newPackage,
-      excludes: newPackage.excludes.filter((_, i) => i !== index),
+      priceTiers: newPackage.priceTiers.map((tier) =>
+        tier.id === tierId
+          ? {
+              ...tier,
+              includes: tier.includes.map((item, i) =>
+                i === index ? value : item
+              ),
+            }
+          : tier
+      ),
+    })
+  }
+
+  const removeIncludeItem = (tierId: string, index: number) => {
+    setNewPackage({
+      ...newPackage,
+      priceTiers: newPackage.priceTiers.map((tier) =>
+        tier.id === tierId
+          ? {
+              ...tier,
+              includes: tier.includes.filter((_, i) => i !== index),
+            }
+          : tier
+      ),
     })
   }
 
@@ -244,9 +297,22 @@ export function BusinessSignupForm() {
             "Photography area setup",
           ],
           samplePackages: [
-            { name: "Wedding Bliss Package", price: "₹1,50,000", duration: "Full Day" },
-            { name: "Intimate Ceremony", price: "₹80,000", duration: "6 Hours" },
-            { name: "Grand Celebration", price: "₹2,50,000", duration: "2 Days" },
+            { 
+              name: "Wedding Bliss Package", 
+              tiers: [
+                { price: "₹1,500/head", description: "Standard package with basic amenities" },
+                { price: "₹2,500/head", description: "Premium package with enhanced services" },
+                { price: "₹3,500/head", description: "Luxury package with all inclusive services" }
+              ],
+              duration: "Full Day" 
+            },
+            { 
+              name: "Intimate Ceremony", 
+              tiers: [
+                { price: "₹2,000/head", description: "Small gathering package" }
+              ],
+              duration: "6 Hours" 
+            },
           ],
         }
       case "makeup":
@@ -264,9 +330,14 @@ export function BusinessSignupForm() {
             "Family makeup (2 people)",
           ],
           samplePackages: [
-            { name: "Bridal Glam Package", price: "₹35,000", duration: "Full Day" },
-            { name: "Engagement Special", price: "₹18,000", duration: "4 Hours" },
-            { name: "Mehndi Makeover", price: "₹15,000", duration: "3 Hours" },
+            { 
+              name: "Bridal Glam Package", 
+              tiers: [
+                { price: "₹25,000", description: "Basic bridal package" },
+                { price: "₹35,000", description: "Premium bridal package with additional services" }
+              ],
+              duration: "Full Day" 
+            },
           ],
         }
       case "photography":
@@ -284,9 +355,14 @@ export function BusinessSignupForm() {
             "Raw photo backup",
           ],
           samplePackages: [
-            { name: "Complete Wedding Story", price: "₹1,20,000", duration: "3 Days" },
-            { name: "Single Day Coverage", price: "₹60,000", duration: "12 Hours" },
-            { name: "Pre-Wedding Special", price: "₹35,000", duration: "4 Hours" },
+            { 
+              name: "Complete Wedding Story", 
+              tiers: [
+                { price: "₹80,000", description: "Basic coverage for main events" },
+                { price: "₹1,20,000", description: "Full coverage with additional services" }
+              ],
+              duration: "3 Days" 
+            },
           ],
         }
       case "catering":
@@ -304,9 +380,15 @@ export function BusinessSignupForm() {
             "Cleanup service",
           ],
           samplePackages: [
-            { name: "Royal Feast", price: "₹2,500/plate", duration: "Per Event" },
-            { name: "Traditional Spread", price: "₹1,800/plate", duration: "Per Event" },
-            { name: "Continental Delight", price: "₹2,200/plate", duration: "Per Event" },
+            { 
+              name: "Royal Feast", 
+              tiers: [
+                { price: "₹1,500/plate", description: "Standard menu with 3 starters, 5 main courses" },
+                { price: "₹2,500/plate", description: "Premium menu with 5 starters, 8 main courses, live counters" },
+                { price: "₹3,500/plate", description: "Luxury menu with all inclusive services" }
+              ],
+              duration: "Per Event" 
+            },
           ],
         }
       case "decoration":
@@ -324,9 +406,14 @@ export function BusinessSignupForm() {
             "Cleanup after event",
           ],
           samplePackages: [
-            { name: "Royal Elegance", price: "₹1,80,000", duration: "Setup + Event" },
-            { name: "Floral Paradise", price: "₹1,20,000", duration: "Setup + Event" },
-            { name: "Modern Chic", price: "₹95,000", duration: "Setup + Event" },
+            { 
+              name: "Royal Elegance", 
+              tiers: [
+                { price: "₹1,00,000", description: "Basic stage and hall decoration" },
+                { price: "₹1,80,000", description: "Premium decoration with floral arrangements" }
+              ],
+              duration: "Setup + Event" 
+            },
           ],
         }
       case "music":
@@ -344,9 +431,14 @@ export function BusinessSignupForm() {
             "Coordinator on-site",
           ],
           samplePackages: [
-            { name: "Party Night Package", price: "₹45,000", duration: "8 Hours" },
-            { name: "Mehndi Beats", price: "₹25,000", duration: "4 Hours" },
-            { name: "Wedding Celebration", price: "₹65,000", duration: "12 Hours" },
+            { 
+              name: "Party Night Package", 
+              tiers: [
+                { price: "₹25,000", description: "Basic DJ services" },
+                { price: "₹45,000", description: "Premium package with lighting effects" }
+              ],
+              duration: "8 Hours" 
+            },
           ],
         }
       default:
@@ -359,14 +451,18 @@ export function BusinessSignupForm() {
             "Timely delivery",
           ],
           samplePackages: [
-            { name: "Standard Package", price: "₹25,000", duration: "As Required" },
-            { name: "Premium Package", price: "₹45,000", duration: "As Required" },
+            { 
+              name: "Standard Package", 
+              tiers: [
+                { price: "₹25,000", description: "Basic services" }
+              ],
+              duration: "As Required" 
+            },
           ],
         }
     }
   }
 
-  // Add this helper function at the top of the component
   const getPricingFields = (category: string) => {
     switch (category) {
       case "venue":
@@ -711,7 +807,7 @@ export function BusinessSignupForm() {
 
             {/* Dynamic Pricing Section */}
             {formData.category && (
-              <div className="bg-gray-50 p-6 rounded-lg">
+              <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4">{pricingConfig.title}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {pricingConfig.fields.map((field) => (
@@ -759,9 +855,14 @@ export function BusinessSignupForm() {
                     {packageSuggestions.samplePackages.map((sample, index) => (
                       <div key={index} className="bg-white p-3 rounded border text-sm">
                         <div className="font-medium text-purple-700">{sample.name}</div>
-                        <div className="text-gray-600">
-                          {sample.price} • {sample.duration}
+                        <div className="space-y-1 mt-1">
+                          {sample.tiers.map((tier, i) => (
+                            <div key={i} className="text-gray-600">
+                              <span className="font-medium">{tier.price}</span>: {tier.description}
+                            </div>
+                          ))}
                         </div>
+                        <div className="text-xs text-gray-500 mt-1">{sample.duration}</div>
                       </div>
                     ))}
                   </div>
@@ -784,9 +885,37 @@ export function BusinessSignupForm() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{pkg.description}</p>
-                            <div className="flex items-center gap-4 text-sm">
-                              <span className="font-medium text-purple-600">{pkg.price}</span>
+                            {pkg.description && (
+                              <p className="text-sm text-gray-600 mb-2">{pkg.description}</p>
+                            )}
+                            
+                            <div className="space-y-3">
+                              {pkg.priceTiers.map((tier, index) => (
+                                <div key={index} className="bg-gray-50 p-3 rounded">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-medium text-purple-600 flex items-center">
+                                      <IndianRupee className="w-4 h-4 mr-1" />
+                                      {tier.price}
+                                    </span>
+                                    {tier.description && (
+                                      <span className="text-sm text-gray-600">{tier.description}</span>
+                                    )}
+                                  </div>
+                                  {tier.includes.length > 0 && (
+                                    <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                                      {tier.includes.map((item, i) => (
+                                        <li key={i} className="flex items-start">
+                                          <span className="text-green-500 mr-2">✓</span>
+                                          {item}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            
+                            <div className="flex items-center gap-4 text-sm mt-2">
                               <span className="text-gray-500">Duration: {pkg.duration}</span>
                               {pkg.maxBookings && (
                                 <span className="text-gray-500">Max: {pkg.maxBookings} bookings</span>
@@ -813,25 +942,141 @@ export function BusinessSignupForm() {
                   <div className="bg-white p-6 rounded-lg border-2 border-purple-200">
                     <h5 className="font-semibold text-gray-900 mb-4">Create Custom Package</h5>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <Label htmlFor="packageName">Package Name *</Label>
-                        <Input
-                          id="packageName"
-                          value={newPackage.name}
-                          onChange={(e) => setNewPackage({ ...newPackage, name: e.target.value })}
-                          placeholder="e.g., Wedding Bliss Package"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="packagePrice">Price *</Label>
-                        <Input
-                          id="packagePrice"
-                          value={newPackage.price}
-                          onChange={(e) => setNewPackage({ ...newPackage, price: e.target.value })}
-                          placeholder="₹50,000"
-                        />
-                      </div>
+                    <div className="mb-4">
+                      <Label htmlFor="packageName">Package Name *</Label>
+                      <Input
+                        id="packageName"
+                        value={newPackage.name}
+                        onChange={(e) => setNewPackage({ ...newPackage, name: e.target.value })}
+                        placeholder="e.g., Wedding Bliss Package"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <Label htmlFor="packageDescription">Package Description</Label>
+                      <Textarea
+                        id="packageDescription"
+                        value={newPackage.description}
+                        onChange={(e) => setNewPackage({ ...newPackage, description: e.target.value })}
+                        placeholder="Describe what this package is about..."
+                        rows={2}
+                      />
+                    </div>
+
+                    {/* Price Tiers */}
+                    <div className="space-y-4 mb-6">
+                      <Label>Price Tiers *</Label>
+                      {newPackage.priceTiers.map((tier) => (
+                        <div key={tier.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="font-medium text-sm">Price Tier</span>
+                            {newPackage.priceTiers.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removePriceTier(tier.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <Label htmlFor={`price-${tier.id}`}>Price *</Label>
+                              <Input
+                                id={`price-${tier.id}`}
+                                value={tier.price}
+                                onChange={(e) => updatePriceTier(tier.id, "price", e.target.value)}
+                                placeholder="e.g., ₹1,500/head or ₹50,000"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`description-${tier.id}`}>Description</Label>
+                              <Input
+                                id={`description-${tier.id}`}
+                                value={tier.description}
+                                onChange={(e) => updatePriceTier(tier.id, "description", e.target.value)}
+                                placeholder="Brief description of what this price includes"
+                              />
+                            </div>
+                          </div>
+
+                          {/* What's Included */}
+                          <div className="mb-4">
+                            <Label className="mb-2 block">What's Included *</Label>
+                            <div className="space-y-2">
+                              {tier.includes.map((item, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                  <Input
+                                    value={item}
+                                    onChange={(e) => updateIncludeItem(tier.id, index, e.target.value)}
+                                    placeholder="e.g., Professional makeup application"
+                                    className="flex-1"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeIncludeItem(tier.id, index)}
+                                    className="text-red-600"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => addIncludeItem(tier.id)}
+                                className="w-full bg-transparent"
+                              >
+                                <Plus className="w-4 h-4 mr-2" />
+                                Add Included Item
+                              </Button>
+                            </div>
+
+                            {/* Quick Add Suggestions */}
+                            <div className="mt-2">
+                              <p className="text-xs text-gray-500 mb-1">Quick add suggestions:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {packageSuggestions.suggestions.slice(0, 5).map((suggestion, index) => (
+                                  <button
+                                    key={index}
+                                    type="button"
+                                    onClick={() => {
+                                      const emptyIndex = tier.includes.findIndex((item) => item === "")
+                                      if (emptyIndex !== -1) {
+                                        updateIncludeItem(tier.id, emptyIndex, suggestion)
+                                      } else {
+                                        addIncludeItem(tier.id)
+                                        updateIncludeItem(tier.id, tier.includes.length, suggestion)
+                                      }
+                                    }}
+                                    className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded"
+                                  >
+                                    + {suggestion}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addPriceTier}
+                        className="w-full bg-transparent"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Another Price Tier
+                      </Button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -852,116 +1097,6 @@ export function BusinessSignupForm() {
                           onChange={(e) => setNewPackage({ ...newPackage, maxBookings: e.target.value })}
                           placeholder="e.g., 10 per month"
                         />
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <Label htmlFor="packageDescription">Package Description</Label>
-                      <Textarea
-                        id="packageDescription"
-                        value={newPackage.description}
-                        onChange={(e) => setNewPackage({ ...newPackage, description: e.target.value })}
-                        placeholder="Describe what's included in this package..."
-                        rows={2}
-                      />
-                    </div>
-
-                    {/* What's Included */}
-                    <div className="mb-4">
-                      <Label className="mb-2 block">What's Included</Label>
-                      <div className="space-y-2">
-                        {newPackage.includes.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <Input
-                              value={item}
-                              onChange={(e) => updateIncludeItem(index, e.target.value)}
-                              placeholder="e.g., Professional makeup application"
-                              className="flex-1"
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeIncludeItem(index)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ))}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={addIncludeItem}
-                          className="w-full bg-transparent"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Item
-                        </Button>
-                      </div>
-
-                      {/* Quick Add Suggestions */}
-                      <div className="mt-2">
-                        <p className="text-xs text-gray-500 mb-1">Quick add suggestions:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {packageSuggestions.suggestions.slice(0, 5).map((suggestion, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              onClick={() => {
-                                const emptyIndex = newPackage.includes.findIndex((item) => item === "")
-                                if (emptyIndex !== -1) {
-                                  updateIncludeItem(emptyIndex, suggestion)
-                                } else {
-                                  setNewPackage({
-                                    ...newPackage,
-                                    includes: [...newPackage.includes, suggestion],
-                                  })
-                                }
-                              }}
-                              className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded"
-                            >
-                              + {suggestion}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* What's Not Included */}
-                    <div className="mb-4">
-                      <Label className="mb-2 block">What's Not Included (Optional)</Label>
-                      <div className="space-y-2">
-                        {newPackage.excludes.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <Input
-                              value={item}
-                              onChange={(e) => updateExcludeItem(index, e.target.value)}
-                              placeholder="e.g., Transportation costs"
-                              className="flex-1"
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeExcludeItem(index)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ))}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={addExcludeItem}
-                          className="w-full bg-transparent"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Exclusion
-                        </Button>
                       </div>
                     </div>
 
@@ -1110,14 +1245,31 @@ export function BusinessSignupForm() {
                 </p>
                 <div className="space-y-2">
                   {customPackages.map((pkg) => (
-                    <div key={pkg.id} className="flex items-center justify-between bg-white p-3 rounded">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{pkg.name}</span>
-                        {pkg.isPopular && (
-                          <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Popular</span>
-                        )}
+                    <div key={pkg.id} className="bg-white p-4 rounded-lg border">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{pkg.name}</span>
+                          {pkg.isPopular && (
+                            <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                              Popular
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-sm text-gray-500">{pkg.duration}</span>
                       </div>
-                      <span className="text-purple-600 font-medium">{pkg.price}</span>
+                      <div className="space-y-2">
+                        {pkg.priceTiers.map((tier, index) => (
+                          <div key={index} className="bg-gray-50 p-2 rounded">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-purple-600 flex items-center">
+                                <IndianRupee className="w-4 h-4 mr-1" />
+                                {tier.price}
+                              </span>
+                              {tier.description && <span className="text-sm text-gray-600">{tier.description}</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>

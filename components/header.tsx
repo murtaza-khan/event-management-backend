@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Menu, X, User, Heart, LayoutDashboard, Briefcase } from "lucide-react"
-import { useAuth } from "../app/context/auth-context"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Menu, X, User, Heart, LayoutDashboard, Briefcase } from "lucide-react";
+import { useAuth } from "../app/context/auth-context";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const router = useRouter()
-  const { isAuthenticated, user, isLoading, logout } = useAuth()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const { isAuthenticated, user, isLoading, logout } = useAuth();
 
   if (isLoading) {
     return (
@@ -20,7 +20,7 @@ export function Header() {
           <div className="animate-pulse h-8 w-24 bg-gray-200 rounded"></div>
         </div>
       </header>
-    )
+    );
   }
 
   return (
@@ -37,13 +37,22 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/venues" className="text-gray-700 hover:text-pink-600 transition-colors">
+            <Link
+              href="/venues"
+              className="text-gray-700 hover:text-pink-600 transition-colors"
+            >
               Venues
             </Link>
-            <Link href="/packages" className="text-gray-700 hover:text-pink-600 transition-colors">
+            <Link
+              href="/packages"
+              className="text-gray-700 hover:text-pink-600 transition-colors"
+            >
               Packages
             </Link>
-            <Link href="/about" className="text-gray-700 hover:text-pink-600 transition-colors">
+            <Link
+              href="/about"
+              className="text-gray-700 hover:text-pink-600 transition-colors"
+            >
               About
             </Link>
           </nav>
@@ -54,7 +63,7 @@ export function Header() {
               <Heart className="w-4 h-4 mr-2" />
               Wishlist
             </Button>
-            
+
             {isAuthenticated ? (
               <>
                 {user?.isClient && (
@@ -73,11 +82,6 @@ export function Header() {
                         Vendor Dashboard
                       </Button>
                     </Link>
-                    <Link href="/business/signup">
-                      <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
-                        List Your Business
-                      </Button>
-                    </Link>
                   </>
                 )}
                 <Button variant="ghost" size="sm" onClick={logout}>
@@ -86,18 +90,32 @@ export function Header() {
                 </Button>
               </>
             ) : (
-              <Link href="/auth/login">
-                <Button variant="ghost" size="sm">
-                  <User className="w-4 h-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
+              <>
+                <Link href="/business/signup">
+                  <Button size="sm" className="bg-pink-600 hover:bg-pink-700">
+                    List Your Business
+                  </Button>
+                </Link>
+                <Link href="/auth/login">
+                  <Button variant="ghost" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+              </>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <button
+            className="md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
 
@@ -105,22 +123,22 @@ export function Header() {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col space-y-4">
-              <Link 
-                href="/venues" 
+              <Link
+                href="/venues"
                 className="text-gray-700 hover:text-pink-600"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Venues
               </Link>
-              <Link 
-                href="/packages" 
+              <Link
+                href="/packages"
                 className="text-gray-700 hover:text-pink-600"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Packages
               </Link>
-              <Link 
-                href="/about" 
+              <Link
+                href="/about"
                 className="text-gray-700 hover:text-pink-600"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -131,7 +149,7 @@ export function Header() {
                   <Heart className="w-4 h-4 mr-2" />
                   Wishlist
                 </Button>
-                
+
                 {isAuthenticated ? (
                   <>
                     {user?.isClient && (
@@ -139,7 +157,11 @@ export function Header() {
                         href="/dashboard"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <Button variant="ghost" size="sm" className="justify-start w-full">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="justify-start w-full"
+                        >
                           <LayoutDashboard className="w-4 h-4 mr-2" />
                           Dashboard
                         </Button>
@@ -151,17 +173,13 @@ export function Header() {
                           href="/vendor-dashboard"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <Button variant="ghost" size="sm" className="justify-start w-full">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="justify-start w-full"
+                          >
                             <Briefcase className="w-4 h-4 mr-2" />
                             Vendor Dashboard
-                          </Button>
-                        </Link>
-                        <Link
-                          href="/business/signup"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          <Button size="sm" className="bg-pink-600 hover:bg-pink-700 w-full">
-                            List Your Business
                           </Button>
                         </Link>
                       </>
@@ -171,8 +189,8 @@ export function Header() {
                       size="sm"
                       className="justify-start w-full"
                       onClick={() => {
-                        logout()
-                        setIsMenuOpen(false)
+                        logout();
+                        setIsMenuOpen(false);
                       }}
                     >
                       <User className="w-4 h-4 mr-2" />
@@ -180,15 +198,32 @@ export function Header() {
                     </Button>
                   </>
                 ) : (
-                  <Link
-                    href="/auth/login"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Button variant="ghost" size="sm" className="justify-start w-full">
-                      <User className="w-4 h-4 mr-2" />
-                      Login
-                    </Button>
-                  </Link>
+                  <>
+                    <Link
+                      href="/business/signup"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Button
+                        size="sm"
+                        className="bg-pink-600 hover:bg-pink-700 w-full"
+                      >
+                        List Your Business
+                      </Button>
+                    </Link>
+                    <Link
+                      href="/auth/login"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="justify-start w-full"
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Login
+                      </Button>
+                    </Link>
+                  </>
                 )}
               </div>
             </nav>
@@ -196,5 +231,5 @@ export function Header() {
         )}
       </div>
     </header>
-  )
+  );
 }
