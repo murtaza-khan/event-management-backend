@@ -40,18 +40,18 @@ interface FormDataState {
   businessType: string;
   category: string;
   description: string;
-  establishedYear: string | null;
+  establishedYear: string;
 
   // Contact Information
   ownerName: string;
   phone: string;
-  whatsapp: string | null;
-  website: string | null;
+  whatsapp: string;
+  website: string;
 
   // Location
   address: string;
   city: string;
-  area: string | null;
+  area: string;
 
   // Services & Pricing
   services: string;
@@ -102,7 +102,7 @@ interface FormDataState {
   packageDeal: string | null;
   minimumBooking: string | null;
   advancePayment: string | null;
-  cancellationPolicy: string;
+  cancellationPolicy: string | null;
 
   // Documents & Media
   businessLicense: any;
@@ -117,6 +117,10 @@ export function BusinessSignupForm() {
   const [currentStep, setCurrentStep] = useState(1)
   const [customPackages, setCustomPackages] = useState<CustomPackage[]>([])
   const [showCustomPackageForm, setShowCustomPackageForm] = useState(false)
+  const [businessLicenseFile, setBusinessLicenseFile] = useState<File | null>(null)
+  const [portfolioFiles, setPortfolioFiles] = useState<File[]>([])
+  const [businessLicensePreview, setBusinessLicensePreview] = useState<string | null>(null)
+  const [portfolioPreviews, setPortfolioPreviews] = useState<string[]>([])
   
   const [formData, setFormData] = useState<FormDataState>({
     // Authentication fields
@@ -129,18 +133,18 @@ export function BusinessSignupForm() {
     businessType: "",
     category: "",
     description: "",
-    establishedYear: null,
+    establishedYear: "",
 
     // Contact Information
     ownerName: "",
     phone: "",
-    whatsapp: null,
-    website: null,
+    whatsapp: "",
+    website: "",
 
     // Location
     address: "",
     city: "",
-    area: null,
+    area: "",
 
     // Services & Pricing
     services: "",
@@ -191,7 +195,7 @@ export function BusinessSignupForm() {
     packageDeal: null,
     minimumBooking: null,
     advancePayment: null,
-    cancellationPolicy: "",
+    cancellationPolicy: null,
 
     // Documents & Media
     businessLicense: null,
@@ -232,16 +236,95 @@ export function BusinessSignupForm() {
     }
   }
 
-  const preparePayload = (formData: FormDataState) => {
-    // Remove pricing and offer fields from top level
-    const { confirmPassword, ...rest } = formData;
-    const payload = { ...rest };
-    
-    // Add custom packages if any
-    if (customPackages.length > 0) {
-      payload.customPackages = customPackages;
+  const handleBusinessLicenseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setBusinessLicenseFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBusinessLicensePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
+  };
 
+  const handlePortfolioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      if (portfolioFiles.length + files.length > 10) {
+        alert("You can upload a maximum of 10 portfolio images");
+        return;
+      }
+      setPortfolioFiles([...portfolioFiles, ...files]);
+      
+      // Create previews
+      const newPreviews: string[] = [];
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          newPreviews.push(reader.result as string);
+          if (newPreviews.length === files.length) {
+            setPortfolioPreviews([...portfolioPreviews, ...newPreviews]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removePortfolioImage = (index: number) => {
+    const newFiles = [...portfolioFiles];
+    newFiles.splice(index, 1);
+    setPortfolioFiles(newFiles);
+    
+    const newPreviews = [...portfolioPreviews];
+    newPreviews.splice(index, 1);
+    setPortfolioPreviews(newPreviews);
+  };
+
+  const preparePayload = () => {
+    // Create the payload object with nested structure
+    const payload: any = {
+      ...formData,
+      // Remove unused fields
+      confirmPassword: undefined,
+      // Add custom packages
+      customPackages: customPackages.length > 0 ? customPackages : [],
+      // Convert empty strings to null
+      ...Object.fromEntries(
+        Object.entries(formData).map(([key, value]) => [
+          key, 
+          value === "" ? null : value
+        ])
+      )
+    };
+    
+    // Remove confirmPassword field
+    delete payload.confirmPassword;
+    
+    // Convert null values for all optional fields
+    const optionalFields = [
+      'perHeadPrice', 'venueRental', 'minGuests', 'maxGuests', 'decorationCharges',
+      'parkingCapacity', 'bridalPackage', 'partyMakeup', 'engagementPackage',
+      'mehndiBridal', 'trialMakeup', 'airbrushMakeup', 'weddingPackage',
+      'preWeddingShoot', 'engagementCoverage', 'mehndiBarat', 'cinematography',
+      'albumPrinting', 'perPlateBasic', 'perPlatePremium', 'perPlateLuxury',
+      'liveCounters', 'dessertStation', 'serviceCharges', 'stageDecoration',
+      'hallDecoration', 'flowerDecoration', 'lightingPackage', 'backdropRental',
+      'djServices', 'liveMusic', 'soundSystem', 'lightingEffects', 'equipmentRental',
+      'basicPackage', 'premiumPackage', 'luxuryPackage', 'customization',
+      'earlyBirdDiscount', 'seasonalOffer', 'packageDeal', 'minimumBooking',
+      'advancePayment'
+    ];
+    
+    optionalFields.forEach(field => {
+      if (payload[field] === "") {
+        payload[field] = null;
+      }
+    });
+    
     return payload;
   };
 
@@ -286,15 +369,24 @@ export function BusinessSignupForm() {
     }
     
     // Prepare payload
-    const payload = preparePayload(formData);
+    const payload = preparePayload();
+
+    // Create FormData for file uploads
+    const formPayload = new FormData();
+    formPayload.append('data', JSON.stringify(payload));
+    
+    if (businessLicenseFile) {
+      formPayload.append('businessLicense', businessLicenseFile);
+    }
+    
+    portfolioFiles.forEach(file => {
+      formPayload.append('portfolio', file);
+    });
 
     try {
       const response = await fetch('/api/auth/register/vendor', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: formPayload,
       })
 
       if (!response.ok) {
@@ -748,7 +840,7 @@ export function BusinessSignupForm() {
                 <Label htmlFor="businessName">Business Name *</Label>
                 <Input
                   id="businessName"
-                  value={formData.businessName}
+                  value={formData.businessName || ''}
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                   placeholder="Enter your business name"
                   required
@@ -757,6 +849,7 @@ export function BusinessSignupForm() {
               <div>
                 <Label htmlFor="businessType">Business Type *</Label>
                 <Select 
+                  value={formData.businessType}
                   onValueChange={(value) => setFormData({ ...formData, businessType: value })}
                   required
                 >
@@ -777,6 +870,7 @@ export function BusinessSignupForm() {
               <div>
                 <Label htmlFor="category">Category *</Label>
                 <Select 
+                  value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
                   required
                 >
@@ -791,7 +885,6 @@ export function BusinessSignupForm() {
                     <SelectItem value="decoration">Decoration</SelectItem>
                     <SelectItem value="music">Music & Entertainment</SelectItem>
                     <SelectItem value="transportation">Transportation</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -802,10 +895,10 @@ export function BusinessSignupForm() {
                   type="number"
                   min="1950"
                   max="2024"
-                  value={formData.establishedYear || ""}
+                  value={formData.establishedYear || ''}
                   onChange={(e) => setFormData({ 
                     ...formData, 
-                    establishedYear: e.target.value || null 
+                    establishedYear: e.target.value === '' ? null : e.target.value
                   })}
                   placeholder="e.g., 2015"
                 />
@@ -816,7 +909,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="description">Business Description *</Label>
               <Textarea
                 id="description"
-                value={formData.description}
+                value={formData.description || ''}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Describe your business, services, and what makes you unique..."
                 rows={4}
@@ -839,7 +932,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="ownerName">Owner/Manager Name *</Label>
               <Input
                 id="ownerName"
-                value={formData.ownerName}
+                value={formData.ownerName || ''}
                 onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
                 placeholder="Enter full name"
                 required
@@ -852,7 +945,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="email"
                   type="email"
-                  value={formData.email}
+                  value={formData.email || ''}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="business@example.com"
                   required
@@ -863,7 +956,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="phone"
                   type="tel"
-                  value={formData.phone}
+                  value={formData.phone || ''}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+92 300 1234567"
                   required
@@ -877,10 +970,10 @@ export function BusinessSignupForm() {
                 <Input
                   id="whatsapp"
                   type="tel"
-                  value={formData.whatsapp || ""}
+                  value={formData.whatsapp || ''}
                   onChange={(e) => setFormData({ 
                     ...formData, 
-                    whatsapp: e.target.value || null 
+                    whatsapp: e.target.value === '' ? null : e.target.value
                   })}
                   placeholder="+92 300 1234567"
                 />
@@ -890,24 +983,23 @@ export function BusinessSignupForm() {
                 <Input
                   id="website"
                   type="url"
-                  value={formData.website || ""}
+                  value={formData.website || ''}
                   onChange={(e) => setFormData({ 
                     ...formData, 
-                    website: e.target.value || null 
+                    website: e.target.value === '' ? null : e.target.value
                   })}
                   placeholder="https://www.yourbusiness.com"
                 />
               </div>
             </div>
             
-            {/* Password Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="password">Password *</Label>
                 <Input
                   id="password"
                   type="password"
-                  value={formData.password}
+                  value={formData.password || ''}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Create a password (min 8 characters)"
                   required
@@ -918,7 +1010,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="confirmPassword"
                   type="password"
-                  value={formData.confirmPassword}
+                  value={formData.confirmPassword || ''}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Confirm your password"
                   required
@@ -944,7 +1036,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="address">Complete Address *</Label>
               <Textarea
                 id="address"
-                value={formData.address}
+                value={formData.address || ''}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 placeholder="Enter your complete business address"
                 rows={2}
@@ -956,6 +1048,7 @@ export function BusinessSignupForm() {
               <div>
                 <Label htmlFor="city">City *</Label>
                 <Select 
+                  value={formData.city}
                   onValueChange={(value) => setFormData({ ...formData, city: value })}
                   required
                 >
@@ -976,10 +1069,10 @@ export function BusinessSignupForm() {
                 <Label htmlFor="area">Area/Locality</Label>
                 <Input
                   id="area"
-                  value={formData.area || ""}
+                  value={formData.area || ''}
                   onChange={(e) => setFormData({ 
                     ...formData, 
-                    area: e.target.value || null 
+                    area: e.target.value === '' ? null : e.target.value
                   })}
                   placeholder="e.g., DHA Phase 5, Gulberg"
                 />
@@ -990,7 +1083,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="services">Services Offered *</Label>
               <Textarea
                 id="services"
-                value={formData.services}
+                value={formData.services || ''}
                 onChange={(e) => setFormData({ ...formData, services: e.target.value })}
                 placeholder="List all services you provide..."
                 rows={3}
@@ -998,7 +1091,6 @@ export function BusinessSignupForm() {
               />
             </div>
 
-            {/* Dynamic Pricing Section */}
             {formData.category && (
               <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4">{pricingConfig.title}</h4>
@@ -1011,10 +1103,10 @@ export function BusinessSignupForm() {
                       <Input
                         id={field.key}
                         type={field.type}
-                        value={formData[field.key as keyof FormDataState] || ""}
+                        value={formData[field.key as keyof FormDataState] || ''}
                         onChange={(e) => setFormData({ 
                           ...formData, 
-                          [field.key]: e.target.value || null 
+                          [field.key]: e.target.value === '' ? null : e.target.value
                         })}
                         placeholder={field.placeholder}
                         required={field.required}
@@ -1025,7 +1117,6 @@ export function BusinessSignupForm() {
               </div>
             )}
 
-            {/* Custom Packages Section */}
             {formData.category && (
               <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-200">
                 <div className="flex items-center justify-between mb-4">
@@ -1044,7 +1135,6 @@ export function BusinessSignupForm() {
                   </Button>
                 </div>
 
-                {/* Sample Package Ideas */}
                 <div className="mb-4">
                   <p className="text-sm text-gray-600 mb-2">💡 Popular package ideas for {formData.category}:</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -1064,7 +1154,6 @@ export function BusinessSignupForm() {
                   </div>
                 </div>
 
-                {/* Existing Custom Packages */}
                 {customPackages.length > 0 && (
                   <div className="space-y-3 mb-4">
                     <h5 className="font-medium text-gray-900">Your Custom Packages:</h5>
@@ -1133,7 +1222,6 @@ export function BusinessSignupForm() {
                   </div>
                 )}
 
-                {/* Custom Package Form */}
                 {showCustomPackageForm && (
                   <div className="bg-white p-6 rounded-lg border-2 border-purple-200">
                     <h5 className="font-semibold text-gray-900 mb-4">Create Custom Package</h5>
@@ -1142,7 +1230,7 @@ export function BusinessSignupForm() {
                       <Label htmlFor="packageName">Package Name *</Label>
                       <Input
                         id="packageName"
-                        value={newPackage.name}
+                        value={newPackage.name || ''}
                         onChange={(e) => setNewPackage({ ...newPackage, name: e.target.value })}
                         placeholder="e.g., Wedding Bliss Package"
                       />
@@ -1152,14 +1240,13 @@ export function BusinessSignupForm() {
                       <Label htmlFor="packageDescription">Package Description</Label>
                       <Textarea
                         id="packageDescription"
-                        value={newPackage.description}
+                        value={newPackage.description || ''}
                         onChange={(e) => setNewPackage({ ...newPackage, description: e.target.value })}
                         placeholder="Describe what this package is about..."
                         rows={2}
                       />
                     </div>
 
-                    {/* Price Tiers */}
                     <div className="space-y-4 mb-6">
                       <Label>Price Tiers *</Label>
                       {newPackage.priceTiers.map((tier) => (
@@ -1184,7 +1271,7 @@ export function BusinessSignupForm() {
                               <Label htmlFor={`price-${tier.id}`}>Price *</Label>
                               <Input
                                 id={`price-${tier.id}`}
-                                value={tier.price}
+                                value={tier.price || ''}
                                 onChange={(e) => updatePriceTier(tier.id, "price", e.target.value)}
                                 placeholder="e.g., ₹1,500/head or ₹50,000"
                               />
@@ -1193,21 +1280,20 @@ export function BusinessSignupForm() {
                               <Label htmlFor={`description-${tier.id}`}>Description</Label>
                               <Input
                                 id={`description-${tier.id}`}
-                                value={tier.description}
+                                value={tier.description || ''}
                                 onChange={(e) => updatePriceTier(tier.id, "description", e.target.value)}
                                 placeholder="Brief description of what this price includes"
                               />
                             </div>
                           </div>
 
-                          {/* What's Included */}
                           <div className="mb-4">
                             <Label className="mb-2 block">What's Included *</Label>
                             <div className="space-y-2">
                               {tier.includes.map((item, index) => (
                                 <div key={index} className="flex items-center gap-2">
                                   <Input
-                                    value={item}
+                                    value={item || ''}
                                     onChange={(e) => updateIncludeItem(tier.id, index, e.target.value)}
                                     placeholder="e.g., Professional makeup application"
                                     className="flex-1"
@@ -1235,7 +1321,6 @@ export function BusinessSignupForm() {
                               </Button>
                             </div>
 
-                            {/* Quick Add Suggestions */}
                             <div className="mt-2">
                               <p className="text-xs text-gray-500 mb-1">Quick add suggestions:</p>
                               <div className="flex flex-wrap gap-1">
@@ -1280,7 +1365,7 @@ export function BusinessSignupForm() {
                         <Label htmlFor="packageDuration">Duration/Validity</Label>
                         <Input
                           id="packageDuration"
-                          value={newPackage.duration}
+                          value={newPackage.duration || ''}
                           onChange={(e) => setNewPackage({ ...newPackage, duration: e.target.value })}
                           placeholder="e.g., Full Day, 6 Hours, 1 Month"
                         />
@@ -1289,7 +1374,7 @@ export function BusinessSignupForm() {
                         <Label htmlFor="maxBookings">Max Bookings (Optional)</Label>
                         <Input
                           id="maxBookings"
-                          value={newPackage.maxBookings}
+                          value={newPackage.maxBookings || ''}
                           onChange={(e) => setNewPackage({ ...newPackage, maxBookings: e.target.value })}
                           placeholder="e.g., 10 per month"
                         />
@@ -1320,7 +1405,6 @@ export function BusinessSignupForm() {
               </div>
             )}
 
-            {/* Special Offers Section */}
             <div className="bg-pink-50 p-6 rounded-lg border border-pink-200">
               <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <span className="bg-pink-600 text-white px-2 py-1 rounded text-sm mr-2">OFFERS</span>
@@ -1332,10 +1416,10 @@ export function BusinessSignupForm() {
                   <Input
                     id="earlyBirdDiscount"
                     type="number"
-                    value={formData.earlyBirdDiscount || ""}
+                    value={formData.earlyBirdDiscount || ''}
                     onChange={(e) => setFormData({ 
                       ...formData, 
-                      earlyBirdDiscount: e.target.value || null 
+                      earlyBirdDiscount: e.target.value === '' ? null : e.target.value
                     })}
                     placeholder="e.g., 15% for bookings 3 months in advance"
                   />
@@ -1344,10 +1428,10 @@ export function BusinessSignupForm() {
                   <Label htmlFor="seasonalOffer">Seasonal Offer</Label>
                   <Input
                     id="seasonalOffer"
-                    value={formData.seasonalOffer || ""}
+                    value={formData.seasonalOffer || ''}
                     onChange={(e) => setFormData({ 
                       ...formData, 
-                      seasonalOffer: e.target.value || null 
+                      seasonalOffer: e.target.value === '' ? null : e.target.value
                     })}
                     placeholder="e.g., 20% off during summer season"
                   />
@@ -1356,10 +1440,10 @@ export function BusinessSignupForm() {
                   <Label htmlFor="packageDeal">Package Deal</Label>
                   <Input
                     id="packageDeal"
-                    value={formData.packageDeal || ""}
+                    value={formData.packageDeal || ''}
                     onChange={(e) => setFormData({ 
                       ...formData, 
-                      packageDeal: e.target.value || null 
+                      packageDeal: e.target.value === '' ? null : e.target.value
                     })}
                     placeholder="e.g., Book 3 services get 10% off total"
                   />
@@ -1369,10 +1453,10 @@ export function BusinessSignupForm() {
                   <Input
                     id="minimumBooking"
                     type="number"
-                    value={formData.minimumBooking || ""}
+                    value={formData.minimumBooking || ''}
                     onChange={(e) => setFormData({ 
                       ...formData, 
-                      minimumBooking: e.target.value || null 
+                      minimumBooking: e.target.value === '' ? null : e.target.value
                     })}
                     placeholder="₹10,000"
                   />
@@ -1380,7 +1464,6 @@ export function BusinessSignupForm() {
               </div>
             </div>
 
-            {/* Additional Terms */}
             <div className="bg-gray-50 p-6 rounded-lg">
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Booking Terms</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1389,17 +1472,20 @@ export function BusinessSignupForm() {
                   <Input
                     id="advancePayment"
                     type="number"
-                    value={formData.advancePayment || ""}
+                    value={formData.advancePayment || ''}
                     onChange={(e) => setFormData({ 
                       ...formData, 
-                      advancePayment: e.target.value || null 
+                      advancePayment: e.target.value === '' ? null : e.target.value
                     })}
                     placeholder="50"
                   />
                 </div>
                 <div>
                   <Label htmlFor="cancellationPolicy">Cancellation Policy</Label>
-                  <Select onValueChange={(value) => setFormData({ ...formData, cancellationPolicy: value })}>
+                  <Select 
+                    value={formData.cancellationPolicy || ''}
+                    onValueChange={(value) => setFormData({ ...formData, cancellationPolicy: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select policy" />
                     </SelectTrigger>
@@ -1426,28 +1512,92 @@ export function BusinessSignupForm() {
             </div>
 
             <div>
-              <Label>Business License/Registration</Label>
+              <Label>Business License/Registration *</Label>
               <div className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-pink-400 transition-colors">
-                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600 mb-2">Upload business license or registration document</p>
-                <Button variant="outline" size="sm">
-                  Choose File
-                </Button>
+                {businessLicensePreview ? (
+                  <div className="flex flex-col items-center">
+                    <img 
+                      src={businessLicensePreview} 
+                      alt="Business License Preview" 
+                      className="h-32 object-contain mb-2"
+                    />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        setBusinessLicenseFile(null);
+                        setBusinessLicensePreview(null);
+                      }}
+                    >
+                      Change File
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600 mb-2">Upload business license or registration document (PDF or image)</p>
+                    <Input 
+                      id="businessLicense"
+                      type="file" 
+                      className="hidden"
+                      onChange={handleBusinessLicenseChange}
+                      accept="image/*,.pdf"
+                    />
+                    <Label htmlFor="businessLicense">
+                      <Button variant="outline" size="sm" asChild>
+                        <span>Choose File</span>
+                      </Button>
+                    </Label>
+                  </>
+                )}
               </div>
             </div>
 
             <div>
-              <Label>Portfolio Images</Label>
+              <Label>Portfolio Images (Max 10)</Label>
               <div className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-pink-400 transition-colors">
-                <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600 mb-2">Upload up to 10 images showcasing your work</p>
-                <Button variant="outline" size="sm">
-                  Choose Images
-                </Button>
+                {portfolioPreviews.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                    {portfolioPreviews.map((preview, index) => (
+                      <div key={index} className="relative group">
+                        <img 
+                          src={preview} 
+                          alt={`Portfolio ${index + 1}`} 
+                          className="h-32 w-full object-cover rounded"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removePortfolioImage(index)}
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600 mb-2">Upload up to 10 images showcasing your work</p>
+                  </>
+                )}
+                <Input 
+                  id="portfolio"
+                  type="file" 
+                  className="hidden"
+                  onChange={handlePortfolioChange}
+                  accept="image/*"
+                  multiple
+                />
+                <Label htmlFor="portfolio">
+                  <Button variant="outline" size="sm" asChild>
+                    <span>Choose Images</span>
+                  </Button>
+                </Label>
               </div>
             </div>
 
-            {/* Custom Packages Summary */}
             {customPackages.length > 0 && (
               <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4">Package Summary</h4>
@@ -1539,7 +1689,6 @@ export function BusinessSignupForm() {
           <span className="text-sm font-normal text-gray-600">Step {currentStep} of 4</span>
         </CardTitle>
 
-        {/* Progress Bar */}
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
             className="bg-pink-600 h-2 rounded-full transition-all duration-300"
