@@ -2,70 +2,51 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
+    const payload = await request.json();
     
-    // Get JSON data from FormData
-    const data = formData.get('data');
-    if (!data) {
+    // Validate required fields
+    const requiredFields = [
+      'email', 'password', 'businessName', 'businessType', 'category',
+      'description', 'ownerName', 'phone', 'address', 'city', 'services'
+    ];
+    
+    const missingFields = requiredFields.filter(field => !payload[field]);
+    if (missingFields.length > 0) {
       return NextResponse.json(
-        { error: "Missing data payload" },
+        { error: `Missing required fields: ${missingFields.join(', ')}` },
         { status: 400 }
       );
     }
     
-    // Parse JSON payload
-    const payload = JSON.parse(data as string);
-    
-    // Get files
-    const businessLicense = formData.get('businessLicense');
-    const portfolioFiles = formData.getAll('portfolio');
-    
-    // Process files (this would be your actual file upload logic)
-    // For demonstration, we'll just add placeholder values
-    if (businessLicense) {
-      payload.businessLicense = "business_license_file_path.jpg";
-    } else {
-      payload.businessLicense = null;
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(payload.email)) {
+      return NextResponse.json(
+        { error: "Invalid email format" },
+        { status: 400 }
+      );
     }
     
-    payload.portfolio = [];
-    portfolioFiles.forEach((file, index) => {
-      payload.portfolio.push(`portfolio_file_${index + 1}.jpg`);
-    });
+    // Validate password length
+    if (payload.password.length < 8) {
+      return NextResponse.json(
+        { error: "Password must be at least 8 characters long" },
+        { status: 400 }
+      );
+    }
+    
+    // Validate terms agreement
+    if (!payload.agreeToTerms) {
+      return NextResponse.json(
+        { error: "You must agree to the terms and conditions" },
+        { status: 400 }
+      );
+    }
     
     // Here you would typically:
-    // 1. Save files to storage (S3, filesystem, etc.)
+    // 1. Save files to storage (S3, filesystem, etc.) - URLs are already in the payload
     // 2. Save payload to database
     // 3. Process custom packages
-    
-    // Remove unused fields
-    delete payload.confirmPassword;
-    
-    // Convert empty strings to null for all optional fields
-    const optionalFields = [
-      'perHeadPrice', 'venueRental', 'minGuests', 'maxGuests', 'decorationCharges',
-      'parkingCapacity', 'bridalPackage', 'partyMakeup', 'engagementPackage',
-      'mehndiBridal', 'trialMakeup', 'airbrushMakeup', 'weddingPackage',
-      'preWeddingShoot', 'engagementCoverage', 'mehndiBarat', 'cinematography',
-      'albumPrinting', 'perPlateBasic', 'perPlatePremium', 'perPlateLuxury',
-      'liveCounters', 'dessertStation', 'serviceCharges', 'stageDecoration',
-      'hallDecoration', 'flowerDecoration', 'lightingPackage', 'backdropRental',
-      'djServices', 'liveMusic', 'soundSystem', 'lightingEffects', 'equipmentRental',
-      'basicPackage', 'premiumPackage', 'luxuryPackage', 'customization',
-      'earlyBirdDiscount', 'seasonalOffer', 'packageDeal', 'minimumBooking',
-      'advancePayment'
-    ];
-    
-    optionalFields.forEach(field => {
-      if (payload[field] === "") {
-        payload[field] = null;
-      }
-    });
-    
-    // Convert customPackages to array if it's null
-    if (!payload.customPackages) {
-      payload.customPackages = [];
-    }
     
     console.log("Received payload:", payload);
     

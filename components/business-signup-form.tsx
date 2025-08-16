@@ -105,8 +105,8 @@ interface FormDataState {
   cancellationPolicy: string | null;
 
   // Documents & Media
-  businessLicense: any;
-  portfolio: any[];
+  businessLicense: string | null;
+  portfolio: string[];
 
   // Terms
   agreeToTerms: boolean;
@@ -121,6 +121,7 @@ export function BusinessSignupForm() {
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([])
   const [businessLicensePreview, setBusinessLicensePreview] = useState<string | null>(null)
   const [portfolioPreviews, setPortfolioPreviews] = useState<string[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   const [formData, setFormData] = useState<FormDataState>({
     // Authentication fields
@@ -284,27 +285,43 @@ export function BusinessSignupForm() {
     setPortfolioPreviews(newPreviews);
   };
 
-  const preparePayload = () => {
-    // Create the payload object with nested structure
+  const uploadFiles = async (): Promise<{ businessLicenseUrl: string | null, portfolioUrls: string[] }> => {
+    // In a real implementation, you would upload files to your storage (S3, Cloudinary, etc.)
+    // and return the URLs. For this example, we'll simulate the upload process.
+    
+    // Simulate file upload delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Return mock URLs
+    return {
+      businessLicenseUrl: businessLicenseFile ? `https://example.com/uploads/${businessLicenseFile.name}` : null,
+      portfolioUrls: portfolioFiles.map((file, index) => `https://example.com/uploads/portfolio_${index}_${file.name}`)
+    };
+  };
+
+  const preparePayload = async () => {
+    // First upload files if any
+    let businessLicenseUrl = null;
+    let portfolioUrls: string[] = [];
+    
+    if (businessLicenseFile || portfolioFiles.length > 0) {
+      const uploadResult = await uploadFiles();
+      businessLicenseUrl = uploadResult.businessLicenseUrl;
+      portfolioUrls = uploadResult.portfolioUrls;
+    }
+
+    // Create the payload object
     const payload: any = {
       ...formData,
-      // Remove unused fields
-      confirmPassword: undefined,
-      // Add custom packages
       customPackages: customPackages.length > 0 ? customPackages : [],
-      // Convert empty strings to null
-      ...Object.fromEntries(
-        Object.entries(formData).map(([key, value]) => [
-          key, 
-          value === "" ? null : value
-        ])
-      )
+      businessLicense: businessLicenseUrl,
+      portfolio: portfolioUrls,
     };
     
     // Remove confirmPassword field
     delete payload.confirmPassword;
     
-    // Convert null values for all optional fields
+    // Convert empty strings to null for all optional fields
     const optionalFields = [
       'perHeadPrice', 'venueRental', 'minGuests', 'maxGuests', 'decorationCharges',
       'parkingCapacity', 'bridalPackage', 'partyMakeup', 'engagementPackage',
@@ -316,7 +333,7 @@ export function BusinessSignupForm() {
       'djServices', 'liveMusic', 'soundSystem', 'lightingEffects', 'equipmentRental',
       'basicPackage', 'premiumPackage', 'luxuryPackage', 'customization',
       'earlyBirdDiscount', 'seasonalOffer', 'packageDeal', 'minimumBooking',
-      'advancePayment'
+      'advancePayment', 'establishedYear', 'whatsapp', 'website', 'area'
     ];
     
     optionalFields.forEach(field => {
@@ -330,80 +347,77 @@ export function BusinessSignupForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
     
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match")
-      return
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert("Please enter a valid email address")
-      return;
-    }
-    
-    // Validate password strength
-    if (formData.password.length < 8) {
-      alert("Password must be at least 8 characters long")
-      return;
-    }
-    
-    // Validate required fields
-    const requiredFields = [
-      'businessName', 'businessType', 'category', 'description',
-      'ownerName', 'phone', 'address', 'city', 'services'
-    ] as (keyof FormDataState)[];
-    
-    const missingFields = requiredFields.filter(field => !formData[field]);
-    if (missingFields.length > 0) {
-      alert(`Missing required fields: ${missingFields.join(', ')}`);
-      return;
-    }
-    
-    // Validate terms agreement
-    if (!formData.agreeToTerms) {
-      alert("You must agree to the terms and conditions")
-      return
-    }
-    
-    // Prepare payload
-    const payload = preparePayload();
-
-    // Create FormData for file uploads
-    const formPayload = new FormData();
-    formPayload.append('data', JSON.stringify(payload));
-    
-    if (businessLicenseFile) {
-      formPayload.append('businessLicense', businessLicenseFile);
-    }
-    
-    portfolioFiles.forEach(file => {
-      formPayload.append('portfolio', file);
-    });
-
     try {
-      const response = await fetch('/api/auth/register/vendor', {
-        method: 'POST',
-        body: formPayload,
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Registration failed')
+      // Validate passwords match
+      if (formData.password !== formData.confirmPassword) {
+        alert("Passwords do not match")
+        return
       }
-
-      const data = await response.json()
-      console.log('Registration successful:', data)
-      // Redirect or show success message
-    } catch (error) {
-      console.error('Registration error:', error)
-      if (error instanceof Error) {
-        alert(`Registration failed: ${error.message}`)
-      } else {
-        alert("Registration failed: An unknown error occurred")
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert("Please enter a valid email address")
+        return;
       }
+      
+      // Validate password strength
+      if (formData.password.length < 8) {
+        alert("Password must be at least 8 characters long")
+        return;
+      }
+      
+      // Validate required fields
+      const requiredFields = [
+        'businessName', 'businessType', 'category', 'description',
+        'ownerName', 'phone', 'address', 'city', 'services'
+      ] as (keyof FormDataState)[];
+      
+      const missingFields = requiredFields.filter(field => !formData[field]);
+      if (missingFields.length > 0) {
+        alert(`Missing required fields: ${missingFields.join(', ')}`);
+        return;
+      }
+      
+      // Validate terms agreement
+      if (!formData.agreeToTerms) {
+        alert("You must agree to the terms and conditions")
+        return
+      }
+      
+      // Prepare payload
+      const payload = await preparePayload();
+
+      try {
+        const response = await fetch('/api/auth/register/vendor', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Registration failed')
+        }
+
+        const data = await response.json()
+        console.log('Registration successful:', data)
+        // Redirect or show success message
+        alert("Registration successful!")
+      } catch (error) {
+        console.error('Registration error:', error)
+        if (error instanceof Error) {
+          alert(`Registration failed: ${error.message}`)
+        } else {
+          alert("Registration failed: An unknown error occurred")
+        }
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -1711,8 +1725,12 @@ export function BusinessSignupForm() {
                 Next Step
               </Button>
             ) : (
-              <Button type="submit" className="bg-pink-600 hover:bg-pink-700" disabled={!formData.agreeToTerms}>
-                Submit Application
+              <Button 
+                type="submit" 
+                className="bg-pink-600 hover:bg-pink-700" 
+                disabled={!formData.agreeToTerms || isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Application"}
               </Button>
             )}
           </div>
