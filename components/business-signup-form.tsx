@@ -1,7 +1,7 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Upload, Building2, User, MapPin, Camera, Plus, Trash2, Package, Star, IndianRupee } from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
+import { FullscreenLoader } from "@/components/fullscreen-loader"
 
 interface PriceTier {
   id: string
@@ -30,90 +32,37 @@ interface CustomPackage {
 }
 
 interface FormDataState {
-  // Authentication fields
-  email: string;
-  password: string;
-  confirmPassword: string;
-  
-  // Business Information
-  businessName: string;
-  businessType: string;
-  category: string;
-  description: string;
-  establishedYear: string;
-
-  // Contact Information
-  ownerName: string;
-  phone: string;
-  whatsapp: string;
-  website: string;
-
-  // Location
-  address: string;
-  city: string;
-  area: string;
-
-  // Services & Pricing
-  services: string;
-
-  // Dynamic pricing fields
-  perHeadPrice: string | null;
-  venueRental: string | null;
-  minGuests: string | null;
-  maxGuests: string | null;
-  decorationCharges: string | null;
-  parkingCapacity: string | null;
-  bridalPackage: string | null;
-  partyMakeup: string | null;
-  engagementPackage: string | null;
-  mehndiBridal: string | null;
-  trialMakeup: string | null;
-  airbrushMakeup: string | null;
-  weddingPackage: string | null;
-  preWeddingShoot: string | null;
-  engagementCoverage: string | null;
-  mehndiBarat: string | null;
-  cinematography: string | null;
-  albumPrinting: string | null;
-  perPlateBasic: string | null;
-  perPlatePremium: string | null;
-  perPlateLuxury: string | null;
-  liveCounters: string | null;
-  dessertStation: string | null;
-  serviceCharges: string | null;
-  stageDecoration: string | null;
-  hallDecoration: string | null;
-  flowerDecoration: string | null;
-  lightingPackage: string | null;
-  backdropRental: string | null;
-  djServices: string | null;
-  liveMusic: string | null;
-  soundSystem: string | null;
-  lightingEffects: string | null;
-  equipmentRental: string | null;
-  basicPackage: string | null;
-  premiumPackage: string | null;
-  luxuryPackage: string | null;
-  customization: string | null;
-
-  // Offers & Terms
-  earlyBirdDiscount: string | null;
-  seasonalOffer: string | null;
-  packageDeal: string | null;
-  minimumBooking: string | null;
-  advancePayment: string | null;
-  cancellationPolicy: string | null;
-
-  // Documents & Media
-  businessLicense: string | null;
-  portfolio: string[];
-
-  // Terms
-  agreeToTerms: boolean;
-  agreeToMarketing: boolean;
+  email: string
+  password: string
+  confirmPassword: string
+  businessName: string
+  businessType: string
+  category: string
+  description: string
+  establishedYear: string
+  ownerName: string
+  phone: string
+  whatsapp: string
+  website: string
+  address: string
+  city: string
+  area: string
+  services: string
+  pricing: Record<string, string | null>
+  earlyBirdDiscount: string | null
+  seasonalOffer: string | null
+  packageDeal: string | null
+  minimumBooking: string | null
+  advancePayment: string | null
+  cancellationPolicy: string | null
+  businessLicense: string | null
+  portfolio: string[]
+  agreeToTerms: boolean
+  agreeToMarketing: boolean
 }
 
 export function BusinessSignupForm() {
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [customPackages, setCustomPackages] = useState<CustomPackage[]>([])
   const [showCustomPackageForm, setShowCustomPackageForm] = useState(false)
@@ -124,85 +73,31 @@ export function BusinessSignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   
   const [formData, setFormData] = useState<FormDataState>({
-    // Authentication fields
     email: "",
     password: "",
     confirmPassword: "",
-    
-    // Business Information
     businessName: "",
     businessType: "",
     category: "",
     description: "",
     establishedYear: "",
-
-    // Contact Information
     ownerName: "",
     phone: "",
     whatsapp: "",
     website: "",
-
-    // Location
     address: "",
     city: "",
     area: "",
-
-    // Services & Pricing
     services: "",
-
-    // Dynamic pricing fields
-    perHeadPrice: null,
-    venueRental: null,
-    minGuests: null,
-    maxGuests: null,
-    decorationCharges: null,
-    parkingCapacity: null,
-    bridalPackage: null,
-    partyMakeup: null,
-    engagementPackage: null,
-    mehndiBridal: null,
-    trialMakeup: null,
-    airbrushMakeup: null,
-    weddingPackage: null,
-    preWeddingShoot: null,
-    engagementCoverage: null,
-    mehndiBarat: null,
-    cinematography: null,
-    albumPrinting: null,
-    perPlateBasic: null,
-    perPlatePremium: null,
-    perPlateLuxury: null,
-    liveCounters: null,
-    dessertStation: null,
-    serviceCharges: null,
-    stageDecoration: null,
-    hallDecoration: null,
-    flowerDecoration: null,
-    lightingPackage: null,
-    backdropRental: null,
-    djServices: null,
-    liveMusic: null,
-    soundSystem: null,
-    lightingEffects: null,
-    equipmentRental: null,
-    basicPackage: null,
-    premiumPackage: null,
-    luxuryPackage: null,
-    customization: null,
-
-    // Offers & Terms
+    pricing: {},
     earlyBirdDiscount: null,
     seasonalOffer: null,
     packageDeal: null,
     minimumBooking: null,
     advancePayment: null,
     cancellationPolicy: null,
-
-    // Documents & Media
     businessLicense: null,
     portfolio: [],
-
-    // Terms
     agreeToTerms: false,
     agreeToMarketing: false,
   })
@@ -239,189 +134,218 @@ export function BusinessSignupForm() {
 
   const handleBusinessLicenseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setBusinessLicenseFile(file);
+      const file = e.target.files[0]
+      setBusinessLicenseFile(file)
       
-      // Create preview
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onloadend = () => {
-        setBusinessLicensePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+        setBusinessLicensePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
-  };
+  }
 
   const handlePortfolioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const files = Array.from(e.target.files);
+      const files = Array.from(e.target.files)
       if (portfolioFiles.length + files.length > 10) {
-        alert("You can upload a maximum of 10 portfolio images");
-        return;
+        toast({
+          variant: "destructive",
+          title: "Maximum files exceeded",
+          description: "You can upload a maximum of 10 portfolio images",
+        })
+        return
       }
-      setPortfolioFiles([...portfolioFiles, ...files]);
+      setPortfolioFiles([...portfolioFiles, ...files])
       
-      // Create previews
-      const newPreviews: string[] = [];
+      const newPreviews: string[] = []
       files.forEach(file => {
-        const reader = new FileReader();
+        const reader = new FileReader()
         reader.onloadend = () => {
-          newPreviews.push(reader.result as string);
+          newPreviews.push(reader.result as string)
           if (newPreviews.length === files.length) {
-            setPortfolioPreviews([...portfolioPreviews, ...newPreviews]);
+            setPortfolioPreviews([...portfolioPreviews, ...newPreviews])
           }
-        };
-        reader.readAsDataURL(file);
-      });
+        }
+        reader.readAsDataURL(file)
+      })
     }
-  };
+  }
 
   const removePortfolioImage = (index: number) => {
-    const newFiles = [...portfolioFiles];
-    newFiles.splice(index, 1);
-    setPortfolioFiles(newFiles);
+    const newFiles = [...portfolioFiles]
+    newFiles.splice(index, 1)
+    setPortfolioFiles(newFiles)
     
-    const newPreviews = [...portfolioPreviews];
-    newPreviews.splice(index, 1);
-    setPortfolioPreviews(newPreviews);
-  };
+    const newPreviews = [...portfolioPreviews]
+    newPreviews.splice(index, 1)
+    setPortfolioPreviews(newPreviews)
+  }
 
   const uploadFiles = async (): Promise<{ businessLicenseUrl: string | null, portfolioUrls: string[] }> => {
-    // In a real implementation, you would upload files to your storage (S3, Cloudinary, etc.)
-    // and return the URLs. For this example, we'll simulate the upload process.
+    // Simulate file upload
+    await new Promise(resolve => setTimeout(resolve, 1000))
     
-    // Simulate file upload delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Return mock URLs
     return {
-      businessLicenseUrl: businessLicenseFile ? `https://example.com/uploads/${businessLicenseFile.name}` : null,
-      portfolioUrls: portfolioFiles.map((file, index) => `https://example.com/uploads/portfolio_${index}_${file.name}`)
-    };
-  };
+      businessLicenseUrl: businessLicenseFile 
+        ? `https://example.com/uploads/${businessLicenseFile.name}` 
+        : null,
+      portfolioUrls: portfolioFiles.map((file, index) => 
+        `https://example.com/uploads/portfolio_${index}_${file.name}`
+      )
+    }
+  }
 
   const preparePayload = async () => {
-    // First upload files if any
-    let businessLicenseUrl = null;
-    let portfolioUrls: string[] = [];
+    let businessLicenseUrl = null
+    let portfolioUrls: string[] = []
     
     if (businessLicenseFile || portfolioFiles.length > 0) {
-      const uploadResult = await uploadFiles();
-      businessLicenseUrl = uploadResult.businessLicenseUrl;
-      portfolioUrls = uploadResult.portfolioUrls;
+      const uploadResult = await uploadFiles()
+      businessLicenseUrl = uploadResult.businessLicenseUrl
+      portfolioUrls = uploadResult.portfolioUrls
     }
 
-    // Create the payload object
+    // Normalize phone numbers
+    const normalizedPhone = formData.phone.replace(/\D/g, '')
+    const normalizedWhatsapp = formData.whatsapp ? formData.whatsapp.replace(/\D/g, '') : null
+
     const payload: any = {
-      ...formData,
-      customPackages: customPackages.length > 0 ? customPackages : [],
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+      businessName: formData.businessName,
+      businessType: formData.businessType,
+      category: formData.category,
+      description: formData.description,
+      establishedYear: formData.establishedYear || null,
+      ownerName: formData.ownerName,
+      phone: normalizedPhone,
+      whatsapp: normalizedWhatsapp,
+      website: formData.website || null,
+      address: formData.address,
+      city: formData.city,
+      area: formData.area || null,
+      services: formData.services,
+      earlyBirdDiscount: formData.earlyBirdDiscount || null,
+      seasonalOffer: formData.seasonalOffer || null,
+      packageDeal: formData.packageDeal || null,
+      minimumBooking: formData.minimumBooking || null,
+      advancePayment: formData.advancePayment || null,
+      cancellationPolicy: formData.cancellationPolicy || null,
       businessLicense: businessLicenseUrl,
       portfolio: portfolioUrls,
-    };
+      agreeToTerms: formData.agreeToTerms,
+      agreeToMarketing: formData.agreeToMarketing,
+    }
+
+    const pricingFields = Object.entries(formData.pricing)
+      .filter(([_, value]) => value !== null && value !== '')
+      .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})
+
+    if (Object.keys(pricingFields).length > 0) {
+      payload.pricing = pricingFields
+    }
+
+    if (customPackages.length > 0) {
+      payload.customPackages = customPackages
+    }
     
-    // Remove confirmPassword field
-    delete payload.confirmPassword;
-    
-    // Convert empty strings to null for all optional fields
-    const optionalFields = [
-      'perHeadPrice', 'venueRental', 'minGuests', 'maxGuests', 'decorationCharges',
-      'parkingCapacity', 'bridalPackage', 'partyMakeup', 'engagementPackage',
-      'mehndiBridal', 'trialMakeup', 'airbrushMakeup', 'weddingPackage',
-      'preWeddingShoot', 'engagementCoverage', 'mehndiBarat', 'cinematography',
-      'albumPrinting', 'perPlateBasic', 'perPlatePremium', 'perPlateLuxury',
-      'liveCounters', 'dessertStation', 'serviceCharges', 'stageDecoration',
-      'hallDecoration', 'flowerDecoration', 'lightingPackage', 'backdropRental',
-      'djServices', 'liveMusic', 'soundSystem', 'lightingEffects', 'equipmentRental',
-      'basicPackage', 'premiumPackage', 'luxuryPackage', 'customization',
-      'earlyBirdDiscount', 'seasonalOffer', 'packageDeal', 'minimumBooking',
-      'advancePayment', 'establishedYear', 'whatsapp', 'website', 'area'
-    ];
-    
-    optionalFields.forEach(field => {
-      if (payload[field] === "") {
-        payload[field] = null;
-      }
-    });
-    
-    return payload;
-  };
+    return payload
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     
     try {
-      // Validate passwords match
       if (formData.password !== formData.confirmPassword) {
-        alert("Passwords do not match")
+        toast({
+          variant: "destructive",
+          title: "Passwords do not match",
+          description: "Please make sure your passwords match",
+        })
         return
       }
       
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(formData.email)) {
-        alert("Please enter a valid email address")
-        return;
+        toast({
+          variant: "destructive",
+          title: "Invalid email",
+          description: "Please enter a valid email address",
+        })
+        return
       }
       
-      // Validate password strength
       if (formData.password.length < 8) {
-        alert("Password must be at least 8 characters long")
-        return;
+        toast({
+          variant: "destructive",
+          title: "Password too short",
+          description: "Password must be at least 8 characters long",
+        })
+        return
       }
       
-      // Validate required fields
       const requiredFields = [
         'businessName', 'businessType', 'category', 'description',
         'ownerName', 'phone', 'address', 'city', 'services'
-      ] as (keyof FormDataState)[];
+      ] as (keyof FormDataState)[]
       
-      const missingFields = requiredFields.filter(field => !formData[field]);
+      const missingFields = requiredFields.filter(field => !formData[field])
       if (missingFields.length > 0) {
-        alert(`Missing required fields: ${missingFields.join(', ')}`);
-        return;
-      }
-      
-      // Validate terms agreement
-      if (!formData.agreeToTerms) {
-        alert("You must agree to the terms and conditions")
+        toast({
+          variant: "destructive",
+          title: "Missing required fields",
+          description: `Please fill in: ${missingFields.join(', ')}`,
+        })
         return
       }
       
-      // Prepare payload
-      const payload = await preparePayload();
-
-      try {
-        const response = await fetch('/api/auth/register/vendor', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
+      if (!formData.agreeToTerms) {
+        toast({
+          variant: "destructive",
+          title: "Terms not accepted",
+          description: "You must agree to the terms and conditions",
         })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || 'Registration failed')
-        }
-
-        const data = await response.json()
-        console.log('Registration successful:', data)
-        // Redirect or show success message
-        alert("Registration successful!")
-      } catch (error) {
-        console.error('Registration error:', error)
-        if (error instanceof Error) {
-          alert(`Registration failed: ${error.message}`)
-        } else {
-          alert("Registration failed: An unknown error occurred")
-        }
+        return
       }
+      
+      const payload = await preparePayload()
+
+      const response = await fetch('/api/auth/register/vendor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Registration failed')
+      }
+
+      toast({
+        variant: "default",
+        title: "Registration successful!",
+        description: "Your vendor account has been created successfully",
+      })
+
+      router.push('/auth/login?registered=true')
+      
+    } catch (error) {
+      console.error('Registration error:', error)
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+      })
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  // Custom Package Functions
   const addCustomPackage = () => {
     if (newPackage.name && newPackage.priceTiers.every(tier => tier.price && tier.includes.some(inc => inc.trim() !== ""))) {
       const packageWithId = {
@@ -458,7 +382,6 @@ export function BusinessSignupForm() {
     setCustomPackages(customPackages.filter((pkg) => pkg.id !== id))
   }
 
-  // Price Tier Functions
   const addPriceTier = () => {
     setNewPackage({
       ...newPackage,
@@ -492,7 +415,6 @@ export function BusinessSignupForm() {
     })
   }
 
-  // Include/Exclude Functions
   const addIncludeItem = (tierId: string) => {
     setNewPackage({
       ...newPackage,
@@ -531,6 +453,16 @@ export function BusinessSignupForm() {
             }
           : tier
       ),
+    })
+  }
+
+  const handlePricingChange = (key: string, value: string) => {
+    setFormData({
+      ...formData,
+      pricing: {
+        ...formData.pricing,
+        [key]: value === '' ? null : value
+      }
     })
   }
 
@@ -724,13 +656,7 @@ export function BusinessSignupForm() {
           title: "Venue Pricing & Capacity",
           fields: [
             { key: "perHeadPrice", label: "Price per Head", type: "number", placeholder: "₹1,200", required: false },
-            {
-              key: "venueRental",
-              label: "Venue Rental (Base)",
-              type: "number",
-              placeholder: "₹50,000",
-              required: false,
-            },
+            { key: "venueRental", label: "Venue Rental (Base)", type: "number", placeholder: "₹50,000", required: false },
             { key: "minGuests", label: "Minimum Guests", type: "number", placeholder: "100", required: false },
             { key: "maxGuests", label: "Maximum Guests", type: "number", placeholder: "1000", required: false },
             { key: "decorationCharges", label: "Decoration Charges", type: "number", placeholder: "₹25,000", required: false },
@@ -741,13 +667,7 @@ export function BusinessSignupForm() {
         return {
           title: "Makeup Packages",
           fields: [
-            {
-              key: "bridalPackage",
-              label: "Bridal Makeup Package",
-              type: "number",
-              placeholder: "₹25,000",
-              required: false,
-            },
+            { key: "bridalPackage", label: "Bridal Makeup Package", type: "number", placeholder: "₹25,000", required: false },
             { key: "partyMakeup", label: "Party Makeup", type: "number", placeholder: "₹8,000", required: false },
             { key: "engagementPackage", label: "Engagement Package", type: "number", placeholder: "₹15,000", required: false },
             { key: "mehndiBridal", label: "Mehndi Bridal", type: "number", placeholder: "₹12,000", required: false },
@@ -759,13 +679,7 @@ export function BusinessSignupForm() {
         return {
           title: "Photography Packages",
           fields: [
-            {
-              key: "weddingPackage",
-              label: "Complete Wedding Package",
-              type: "number",
-              placeholder: "₹80,000",
-              required: false,
-            },
+            { key: "weddingPackage", label: "Complete Wedding Package", type: "number", placeholder: "₹80,000", required: false },
             { key: "preWeddingShoot", label: "Pre-Wedding Shoot", type: "number", placeholder: "₹25,000", required: false },
             { key: "engagementCoverage", label: "Engagement Coverage", type: "number", placeholder: "₹35,000", required: false },
             { key: "mehndiBarat", label: "Mehndi/Barat Coverage", type: "number", placeholder: "₹45,000", required: false },
@@ -777,13 +691,7 @@ export function BusinessSignupForm() {
         return {
           title: "Catering Packages",
           fields: [
-            {
-              key: "perPlateBasic",
-              label: "Basic Menu (per plate)",
-              type: "number",
-              placeholder: "₹800",
-              required: false,
-            },
+            { key: "perPlateBasic", label: "Basic Menu (per plate)", type: "number", placeholder: "₹800", required: false },
             { key: "perPlatePremium", label: "Premium Menu (per plate)", type: "number", placeholder: "₹1,500", required: false },
             { key: "perPlateLuxury", label: "Luxury Menu (per plate)", type: "number", placeholder: "₹2,500", required: false },
             { key: "liveCounters", label: "Live Counters (per counter)", type: "number", placeholder: "₹8,000", required: false },
@@ -795,13 +703,7 @@ export function BusinessSignupForm() {
         return {
           title: "Decoration Packages",
           fields: [
-            {
-              key: "stageDecoration",
-              label: "Stage Decoration",
-              type: "number",
-              placeholder: "₹35,000",
-              required: false,
-            },
+            { key: "stageDecoration", label: "Stage Decoration", type: "number", placeholder: "₹35,000", required: false },
             { key: "hallDecoration", label: "Complete Hall Decoration", type: "number", placeholder: "₹80,000", required: false },
             { key: "flowerDecoration", label: "Fresh Flower Decoration", type: "number", placeholder: "₹25,000", required: false },
             { key: "lightingPackage", label: "Lighting Package", type: "number", placeholder: "₹20,000", required: false },
@@ -812,13 +714,7 @@ export function BusinessSignupForm() {
         return {
           title: "Music & Entertainment Packages",
           fields: [
-            {
-              key: "djServices",
-              label: "DJ Services (per event)",
-              type: "number",
-              placeholder: "₹25,000",
-              required: false,
-            },
+            { key: "djServices", label: "DJ Services (per event)", type: "number", placeholder: "₹25,000", required: false },
             { key: "liveMusic", label: "Live Music Band", type: "number", placeholder: "₹50,000", required: false },
             { key: "soundSystem", label: "Sound System Rental", type: "number", placeholder: "₹15,000", required: false },
             { key: "lightingEffects", label: "Lighting Effects", type: "number", placeholder: "₹20,000", required: false },
@@ -854,7 +750,7 @@ export function BusinessSignupForm() {
                 <Label htmlFor="businessName">Business Name *</Label>
                 <Input
                   id="businessName"
-                  value={formData.businessName || ''}
+                  value={formData.businessName}
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                   placeholder="Enter your business name"
                   required
@@ -909,7 +805,7 @@ export function BusinessSignupForm() {
                   type="number"
                   min="1950"
                   max="2024"
-                  value={formData.establishedYear || ''}
+                  value={formData.establishedYear}
                   onChange={(e) => setFormData({ 
                     ...formData, 
                     establishedYear: e.target.value === '' ? null : e.target.value
@@ -923,7 +819,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="description">Business Description *</Label>
               <Textarea
                 id="description"
-                value={formData.description || ''}
+                value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Describe your business, services, and what makes you unique..."
                 rows={4}
@@ -946,7 +842,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="ownerName">Owner/Manager Name *</Label>
               <Input
                 id="ownerName"
-                value={formData.ownerName || ''}
+                value={formData.ownerName}
                 onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
                 placeholder="Enter full name"
                 required
@@ -959,7 +855,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="email"
                   type="email"
-                  value={formData.email || ''}
+                  value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="business@example.com"
                   required
@@ -970,7 +866,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="phone"
                   type="tel"
-                  value={formData.phone || ''}
+                  value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+92 300 1234567"
                   required
@@ -1013,7 +909,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="password"
                   type="password"
-                  value={formData.password || ''}
+                  value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Create a password (min 8 characters)"
                   required
@@ -1024,7 +920,7 @@ export function BusinessSignupForm() {
                 <Input
                   id="confirmPassword"
                   type="password"
-                  value={formData.confirmPassword || ''}
+                  value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Confirm your password"
                   required
@@ -1050,7 +946,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="address">Complete Address *</Label>
               <Textarea
                 id="address"
-                value={formData.address || ''}
+                value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 placeholder="Enter your complete business address"
                 rows={2}
@@ -1097,7 +993,7 @@ export function BusinessSignupForm() {
               <Label htmlFor="services">Services Offered *</Label>
               <Textarea
                 id="services"
-                value={formData.services || ''}
+                value={formData.services}
                 onChange={(e) => setFormData({ ...formData, services: e.target.value })}
                 placeholder="List all services you provide..."
                 rows={3}
@@ -1117,11 +1013,8 @@ export function BusinessSignupForm() {
                       <Input
                         id={field.key}
                         type={field.type}
-                        value={formData[field.key as keyof FormDataState] || ''}
-                        onChange={(e) => setFormData({ 
-                          ...formData, 
-                          [field.key]: e.target.value === '' ? null : e.target.value
-                        })}
+                        value={formData.pricing[field.key] || ''}
+                        onChange={(e) => handlePricingChange(field.key, e.target.value)}
                         placeholder={field.placeholder}
                         required={field.required}
                       />
@@ -1244,7 +1137,7 @@ export function BusinessSignupForm() {
                       <Label htmlFor="packageName">Package Name *</Label>
                       <Input
                         id="packageName"
-                        value={newPackage.name || ''}
+                        value={newPackage.name}
                         onChange={(e) => setNewPackage({ ...newPackage, name: e.target.value })}
                         placeholder="e.g., Wedding Bliss Package"
                       />
@@ -1254,7 +1147,7 @@ export function BusinessSignupForm() {
                       <Label htmlFor="packageDescription">Package Description</Label>
                       <Textarea
                         id="packageDescription"
-                        value={newPackage.description || ''}
+                        value={newPackage.description}
                         onChange={(e) => setNewPackage({ ...newPackage, description: e.target.value })}
                         placeholder="Describe what this package is about..."
                         rows={2}
@@ -1285,7 +1178,7 @@ export function BusinessSignupForm() {
                               <Label htmlFor={`price-${tier.id}`}>Price *</Label>
                               <Input
                                 id={`price-${tier.id}`}
-                                value={tier.price || ''}
+                                value={tier.price}
                                 onChange={(e) => updatePriceTier(tier.id, "price", e.target.value)}
                                 placeholder="e.g., ₹1,500/head or ₹50,000"
                               />
@@ -1294,7 +1187,7 @@ export function BusinessSignupForm() {
                               <Label htmlFor={`description-${tier.id}`}>Description</Label>
                               <Input
                                 id={`description-${tier.id}`}
-                                value={tier.description || ''}
+                                value={tier.description}
                                 onChange={(e) => updatePriceTier(tier.id, "description", e.target.value)}
                                 placeholder="Brief description of what this price includes"
                               />
@@ -1307,7 +1200,7 @@ export function BusinessSignupForm() {
                               {tier.includes.map((item, index) => (
                                 <div key={index} className="flex items-center gap-2">
                                   <Input
-                                    value={item || ''}
+                                    value={item}
                                     onChange={(e) => updateIncludeItem(tier.id, index, e.target.value)}
                                     placeholder="e.g., Professional makeup application"
                                     className="flex-1"
@@ -1379,7 +1272,7 @@ export function BusinessSignupForm() {
                         <Label htmlFor="packageDuration">Duration/Validity</Label>
                         <Input
                           id="packageDuration"
-                          value={newPackage.duration || ''}
+                          value={newPackage.duration}
                           onChange={(e) => setNewPackage({ ...newPackage, duration: e.target.value })}
                           placeholder="e.g., Full Day, 6 Hours, 1 Month"
                         />
@@ -1388,7 +1281,7 @@ export function BusinessSignupForm() {
                         <Label htmlFor="maxBookings">Max Bookings (Optional)</Label>
                         <Input
                           id="maxBookings"
-                          value={newPackage.maxBookings || ''}
+                          value={newPackage.maxBookings}
                           onChange={(e) => setNewPackage({ ...newPackage, maxBookings: e.target.value })}
                           placeholder="e.g., 10 per month"
                         />
@@ -1539,8 +1432,8 @@ export function BusinessSignupForm() {
                       variant="outline" 
                       size="sm" 
                       onClick={() => {
-                        setBusinessLicenseFile(null);
-                        setBusinessLicensePreview(null);
+                        setBusinessLicenseFile(null)
+                        setBusinessLicensePreview(null)
                       }}
                     >
                       Change File
@@ -1696,46 +1589,49 @@ export function BusinessSignupForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Business Registration</span>
-          <span className="text-sm font-normal text-gray-600">Step {currentStep} of 4</span>
-        </CardTitle>
+    <>
+      {isSubmitting && <FullscreenLoader />}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>Business Registration</span>
+            <span className="text-sm font-normal text-gray-600">Step {currentStep} of 4</span>
+          </CardTitle>
 
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-pink-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 4) * 100}%` }}
-          ></div>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          {renderStep()}
-
-          <div className="flex justify-between mt-8 pt-6 border-t">
-            <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
-              Previous
-            </Button>
-
-            {currentStep < 4 ? (
-              <Button type="button" onClick={handleNext} className="bg-pink-600 hover:bg-pink-700">
-                Next Step
-              </Button>
-            ) : (
-              <Button 
-                type="submit" 
-                className="bg-pink-600 hover:bg-pink-700" 
-                disabled={!formData.agreeToTerms || isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Submit Application"}
-              </Button>
-            )}
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-pink-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(currentStep / 4) * 100}%` }}
+            ></div>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            {renderStep()}
+
+            <div className="flex justify-between mt-8 pt-6 border-t">
+              <Button type="button" variant="outline" onClick={handlePrevious} disabled={currentStep === 1}>
+                Previous
+              </Button>
+
+              {currentStep < 4 ? (
+                <Button type="button" onClick={handleNext} className="bg-pink-600 hover:bg-pink-700">
+                  Next Step
+                </Button>
+              ) : (
+                <Button 
+                  type="submit" 
+                  className="bg-pink-600 hover:bg-pink-700" 
+                  disabled={!formData.agreeToTerms || isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit Application"}
+                </Button>
+              )}
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </>
   )
 }
