@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -9,26 +10,41 @@ import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface VendorFiltersProps {
-  type: "makeup" | "catering" | "photography" | "decoration"
+  category?: string
+  city?: string
 }
 
-export function VendorFilters({ type }: VendorFiltersProps) {
-  const [priceRange, setPriceRange] = useState([5000, 50000])
+export function VendorFilters({ category, city }: VendorFiltersProps) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [priceRange, setPriceRange] = useState([50000, 200000])
+  const [selectedCity, setSelectedCity] = useState(city || "")
+  const [selectedCategory, setSelectedCategory] = useState(category || "")
 
-  const getSpecializations = () => {
-    switch (type) {
-      case "makeup":
-        return ["Bridal Makeup", "Party Makeup", "Traditional", "Modern", "HD Makeup", "Airbrush"]
-      case "catering":
-        return ["Pakistani", "Continental", "Chinese", "BBQ", "Desserts", "Live Counters"]
-      case "photography":
-        return ["Wedding", "Pre-Wedding", "Engagement", "Candid", "Traditional", "Cinematic"]
-      case "decoration":
-        return ["Stage Setup", "Floral", "Lighting", "Modern", "Traditional", "Themed"]
-      default:
-        return []
-    }
+  const cities = ["lahore", "karachi", "islamabad", "rawalpindi", "faisalabad", "multan"]
+  const categories = [
+    { value: "venue", label: "Wedding Venue" },
+    { value: "makeup", label: "Makeup Artist" },
+    { value: "catering", label: "Catering Service" },
+    { value: "photography", label: "Photography" },
+    { value: "decoration", label: "Decoration" },
+    { value: "music", label: "Music & Entertainment" },
+    { value: "transportation", label: "Transportation" }
+  ]
+
+  const applyFilters = () => {
+    const params = new URLSearchParams()
+    
+    if (selectedCategory) params.set("category", selectedCategory)
+    if (selectedCity) params.set("city", selectedCity)
+    
+    router.push(`/vendors?${params.toString()}`)
   }
+
+  useEffect(() => {
+    if (category) setSelectedCategory(category)
+    if (city) setSelectedCity(city)
+  }, [category, city])
 
   return (
     <div className="space-y-6">
@@ -37,68 +53,61 @@ export function VendorFilters({ type }: VendorFiltersProps) {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Category */}
+          {/* <div>
+            <Label className="text-sm font-medium mb-2 block">Category</Label>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div> */}
+
           {/* Location */}
           <div>
             <Label className="text-sm font-medium mb-2 block">Location</Label>
-            <Select>
+            <Select value={selectedCity} onValueChange={setSelectedCity}>
               <SelectTrigger>
                 <SelectValue placeholder="Select city" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="lahore">Lahore</SelectItem>
-                <SelectItem value="karachi">Karachi</SelectItem>
-                <SelectItem value="islamabad">Islamabad</SelectItem>
-                <SelectItem value="rawalpindi">Rawalpindi</SelectItem>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city.charAt(0).toUpperCase() + city.slice(1)}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
 
           {/* Price Range */}
-          <div>
+          {/* <div>
             <Label className="text-sm font-medium mb-2 block">
               Price Range: ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
             </Label>
             <Slider
               value={priceRange}
               onValueChange={setPriceRange}
-              max={100000}
-              min={2000}
-              step={1000}
+              max={500000}
+              min={25000}
+              step={5000}
               className="mt-2"
             />
-          </div>
+          </div> */}
 
-          {/* Experience */}
-          <div>
-            <Label className="text-sm font-medium mb-2 block">Experience</Label>
-            <div className="space-y-2">
-              {["1-2 years", "3-5 years", "5-10 years", "10+ years"].map((exp) => (
-                <div key={exp} className="flex items-center space-x-2">
-                  <Checkbox id={exp} />
-                  <Label htmlFor={exp} className="text-sm">
-                    {exp}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Specializations */}
-          <div>
-            <Label className="text-sm font-medium mb-2 block">Specializations</Label>
-            <div className="space-y-2">
-              {getSpecializations().map((spec) => (
-                <div key={spec} className="flex items-center space-x-2">
-                  <Checkbox id={spec} />
-                  <Label htmlFor={spec} className="text-sm">
-                    {spec}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Button className="w-full bg-pink-600 hover:bg-pink-700">Apply Filters</Button>
+          <Button 
+            className="w-full bg-pink-600 hover:bg-pink-700"
+            onClick={applyFilters}
+          >
+            Apply Filters
+          </Button>
         </CardContent>
       </Card>
     </div>
