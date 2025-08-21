@@ -1,58 +1,71 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Star, MapPin, Users, Heart, Wifi, Car, Utensils, Camera, Palette, ChefHat, Flower, Music } from "lucide-react"
-import Link from "next/link"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Star,
+  MapPin,
+  Users,
+  Heart,
+  Wifi,
+  Car,
+  Utensils,
+  Camera,
+  Palette,
+  ChefHat,
+  Flower,
+  Music,
+} from "lucide-react";
+import Link from "next/link";
 
 interface Vendor {
-  _id: string
-  businessName: string
-  category: string
-  description: string
-  city: string
-  area: string
-  rating: number
-  reviewCount: number
-  portfolio: string[]
+  _id: string;
+  businessName: string;
+  category: string;
+  description: string;
+  city: string;
+  area: string;
+  rating: number;
+  reviewCount: number;
+  portfolio: string[];
   pricing?: {
-    perHeadPrice?: string
-    venueRental?: string
-    minGuests?: string
-    maxGuests?: string
-    bridalPackage?: string
-    weddingPackage?: string
-    basicPackage?: string
-    premiumPackage?: string
-    luxuryPackage?: string
-  }
+    perHeadPrice?: string;
+    venueRental?: string;
+    minGuests?: string;
+    maxGuests?: string;
+    bridalPackage?: string;
+    weddingPackage?: string;
+    basicPackage?: string;
+    premiumPackage?: string;
+    luxuryPackage?: string;
+  };
 }
 
 interface VendorGridProps {
-  category?: string
-  city?: string
+  category?: string;
+  city?: string;
 }
 
 async function getVendors(category?: string, city?: string): Promise<Vendor[]> {
-  const baseUrl = "http://localhost:3001/api/vendors"
-  const params = new URLSearchParams()
-  
-  if (category) params.append("category", category)
-  if (city) params.append("city", city)
-  
-  const url = `${baseUrl}?${params.toString()}`
-  
+  const baseUrl = "http://localhost:3001/api/vendors";
+  const params = new URLSearchParams();
+
+  if (category) params.append("category", category);
+  if (city) params.append("city", city);
+
+  const url = `${baseUrl}?${params.toString()}`;
+
   try {
     const response = await fetch(url, {
-      next: { revalidate: 60 } // Revalidate every 60 seconds
-    })
-    
+      next: { revalidate: 60 }, // Revalidate every 60 seconds
+    });
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
-    return await response.json()
+
+    return await response.json();
   } catch (error) {
-    console.error("Failed to fetch vendors:", error)
-    return []
+    console.error("Failed to fetch vendors:", error);
+    return [];
   }
 }
 
@@ -63,41 +76,55 @@ const categoryIcons: Record<string, any> = {
   photography: Camera,
   decoration: Flower,
   music: Music,
-  transportation: Car
-}
+  transportation: Car,
+};
 
 const getPriceText = (vendor: Vendor) => {
-  const pricing = vendor.pricing || {}
-  
+  const pricing = vendor.pricing || {};
+
   if (vendor.category === "venue") {
-    return pricing.venueRental ? `₹${parseInt(pricing.venueRental).toLocaleString()}` : "Contact for pricing"
+    return pricing.venueRental
+      ? `₹${parseInt(pricing.venueRental).toLocaleString()}`
+      : "Contact for pricing";
   }
   if (vendor.category === "makeup") {
-    return pricing.bridalPackage ? `Starting from ₹${parseInt(pricing.bridalPackage).toLocaleString()}` : "Contact for pricing"
+    return pricing.bridalPackage
+      ? `Starting from ₹${parseInt(pricing.bridalPackage).toLocaleString()}`
+      : "Contact for pricing";
   }
   if (vendor.category === "catering") {
-    return pricing.perHeadPrice ? `₹${parseInt(pricing.perHeadPrice).toLocaleString()}/plate` : "Contact for pricing"
+    return pricing.perHeadPrice
+      ? `₹${parseInt(pricing.perHeadPrice).toLocaleString()}/plate`
+      : "Contact for pricing";
   }
   if (vendor.category === "photography") {
-    return pricing.weddingPackage ? `Starting from ₹${parseInt(pricing.weddingPackage).toLocaleString()}` : "Contact for pricing"
+    return pricing.weddingPackage
+      ? `Starting from ₹${parseInt(pricing.weddingPackage).toLocaleString()}`
+      : "Contact for pricing";
   }
   if (vendor.category === "transportation") {
-    return pricing.basicPackage ? `Starting from ₹${parseInt(pricing.basicPackage).toLocaleString()}` : "Contact for pricing"
+    return pricing.basicPackage
+      ? `Starting from ₹${parseInt(pricing.basicPackage).toLocaleString()}`
+      : "Contact for pricing";
   }
-  
-  return "Contact for pricing"
-}
+
+  return "Contact for pricing";
+};
 
 export async function VendorGrid({ category, city }: VendorGridProps) {
-  const vendors = await getVendors(category, city)
+  const vendors = await getVendors(category, city);
 
   if (vendors.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600 text-lg">No vendors found matching your criteria.</p>
-        <p className="text-gray-500">Try adjusting your filters or search in a different location.</p>
+        <p className="text-gray-600 text-lg">
+          No vendors found matching your criteria.
+        </p>
+        <p className="text-gray-500">
+          Try adjusting your filters or search in a different location.
+        </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -115,12 +142,15 @@ export async function VendorGrid({ category, city }: VendorGridProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {vendors.map((vendor) => {
-          const IconComponent = categoryIcons[vendor.category] || Users
-          const priceText = getPriceText(vendor)
-          const imageUrl = vendor.portfolio?.[0] || "/placeholder.svg"
+          const IconComponent = categoryIcons[vendor.category] || Users;
+          const priceText = getPriceText(vendor);
+          const imageUrl = vendor.portfolio?.[0] || "/placeholder.svg";
 
           return (
-            <Card key={vendor._id} className="overflow-hidden hover:shadow-xl transition-shadow group">
+            <Card
+              key={vendor._id}
+              className="overflow-hidden hover:shadow-xl transition-shadow group"
+            >
               <div className="relative">
                 <img
                   src={imageUrl}
@@ -139,26 +169,38 @@ export async function VendorGrid({ category, city }: VendorGridProps) {
 
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">{vendor.businessName}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {vendor.businessName}
+                  </h3>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-pink-600">{priceText}</div>
+                    <div className="text-lg font-bold text-pink-600">
+                      {priceText}
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center text-gray-600 mb-2">
                   <MapPin className="w-4 h-4 mr-1" />
-                  <span className="text-sm">{vendor.area}, {vendor.city}</span>
+                  <span className="text-sm">
+                    {vendor.area}, {vendor.city}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
                     <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                    <span className="text-sm font-medium">{vendor.rating || "New"}</span>
-                    <span className="text-sm text-gray-600 ml-1">({vendor.reviewCount} reviews)</span>
+                    <span className="text-sm font-medium">
+                      {vendor.rating || "New"}
+                    </span>
+                    <span className="text-sm text-gray-600 ml-1">
+                      ({vendor.reviewCount} reviews)
+                    </span>
                   </div>
                   <div className="flex items-center text-gray-600">
                     <IconComponent className="w-4 h-4 mr-1" />
-                    <span className="text-sm capitalize">{vendor.category}</span>
+                    <span className="text-sm capitalize">
+                      {vendor.category}
+                    </span>
                   </div>
                 </div>
 
@@ -167,16 +209,20 @@ export async function VendorGrid({ category, city }: VendorGridProps) {
                 </p>
 
                 <div className="flex space-x-2">
-                  <Link href={`/vendors/${vendor._id}`}>
+                  <Link href="/vendor-detail/1">
+                    {/* <Link href={`/vendors/${vendor._id}`}> */}
+
                     <Button variant="outline" className="flex-1 bg-transparent">
                       View Details
                     </Button>
                   </Link>
-                  <Button className="flex-1 bg-pink-600 hover:bg-pink-700">Contact Now</Button>
+                  <Button className="flex-1 bg-pink-600 hover:bg-pink-700">
+                    Contact Now
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
@@ -184,5 +230,5 @@ export async function VendorGrid({ category, city }: VendorGridProps) {
         <Button variant="outline">Load More Vendors</Button>
       </div>
     </div>
-  )
+  );
 }
